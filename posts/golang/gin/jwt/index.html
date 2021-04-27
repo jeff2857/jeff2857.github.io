@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Gin框架中JWT的使用初探&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Gin框架中JWT的使用初探" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Gin框架中JWT的使用初探</h1><p class="article date">2019-08-06</p></section><article class="article markdown-body"><h2 id="0-前言">0. 前言</h2>
+<p>最近学习Golang和Gin框架，初步了解了一下JWT作身份校验，这里做个总结。</p>
+<h2 id="1-认识jwt">1. 认识JWT</h2>
+<p>JSON Web Token（JWT）是一个非常轻巧的规范。这个规范允许我们使用JWT在用户和服务器之间传递安全可靠的信息。一个JWT实际上就是一个字符串，它由三部分组成，头部、载荷与签名。</p>
+<p><strong>header</strong> 用于描述元信息，例如产生signature的算法：</p>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;typ&#34;</span><span class="p">:</span> <span class="s2">&#34;JWT&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;alg&#34;</span><span class="p">:</span> <span class="s2">&#34;HS256&#34;</span>
+<span class="p">}</span>
+</code></pre></div><p>其中 <code>alg</code> 指定了使用哪种哈希算法来创建signature</p>
+<p><strong>payload</strong> 用于携带你希望向服务端传递的信息。你既可以往里添加官方字段（这里的“字段” (field) 也可以被称作“声明” claims），例如iss(Issuer), sub(Subject), exp(Expiration time)，也可以塞入自定义的字段，比如 email:</p>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;email&#34;</span><span class="p">:</span> <span class="s2">&#34;who@mail.com&#34;</span>
+<span class="p">}</span>
+</code></pre></div><p><strong>signature</strong> 的创建分为：</p>
+<ol>
+<li>拿到密钥 <code>secret</code></li>
+<li>将 <code>header</code> 进行 base64 编码，结果为 <code>headerStr</code></li>
+<li>将 <code>payload</code> 进行 base64 编码，结果为 <code>payloadStr</code></li>
+<li>将 <code>headerStr</code> 和 <code>payloadStr</code> 用 <code>.</code> 拼接为字符串 <code>data</code></li>
+<li>以 <code>data</code> 和 <code>secret</code> 作为参数，用哈希算法计算出签名</li>
+</ol>
+<h2 id="2-token-的生成和解析">2. Token 的生成和解析</h2>
+<h3 id="21-生成-token">2.1 生成 token</h3>
+<p>首先引入 jwt-go 依赖</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kn">import</span> <span class="s">&#34;github.com/dgrijalva/jwt-go&#34;</span>
+</code></pre></div><p>自定义 payload 声明</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">type</span> <span class="nx">Claims</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">Email</span>    <span class="kt">string</span> <span class="s">`json:&#34;email&#34;`</span>
+    <span class="nx">Password</span> <span class="kt">string</span> <span class="s">`json:&#34;password&#34;`</span>
+    <span class="nx">jwt</span><span class="p">.</span><span class="nx">StandardClaims</span>
+<span class="p">}</span>
+</code></pre></div><p>自定义 secret 密钥</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">var</span> <span class="nx">jwtSecret</span> <span class="p">=</span> <span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;mySecret&#34;</span><span class="p">)</span>
+</code></pre></div><p>生成 token</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">GenerateToken</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">nowTime</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Now</span><span class="p">()</span>
+    <span class="nx">expireTime</span> <span class="o">:=</span> <span class="nx">nowTime</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Hour</span><span class="p">)</span> <span class="c1">// 失效时间
+</span><span class="c1"></span>    <span class="nx">claims</span> <span class="o">:=</span> <span class="nx">Claims</span><span class="p">{</span>
+        <span class="nx">email</span><span class="p">,</span>
+        <span class="nx">password</span><span class="p">,</span>
+        <span class="nx">jwt</span><span class="p">.</span><span class="nx">StandardClaims</span><span class="p">{</span>
+            <span class="nx">ExpiresAt</span><span class="p">:</span> <span class="nx">expireTime</span><span class="p">.</span><span class="nf">Unix</span><span class="p">(),</span>
+            <span class="nx">Issuer</span><span class="p">:</span>    <span class="s">&#34;custom-issuer&#34;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="nx">tokenClaims</span> <span class="o">:=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nf">NewWithClaims</span><span class="p">(</span><span class="nx">jwt</span><span class="p">.</span><span class="nx">SigningMethodHS256</span><span class="p">,</span> <span class="nx">claims</span><span class="p">)</span>
+    <span class="nx">token</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">tokenClaims</span><span class="p">.</span><span class="nf">SignedString</span><span class="p">(</span><span class="nx">jwtSecret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">token</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></div><h3 id="22-解析-token">2.2 解析 token</h3>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">ParseToken</span><span class="p">(</span><span class="nx">token</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="nx">Claims</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">tokenClaims</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">jwt</span><span class="p">.</span><span class="nf">ParseWithClaims</span><span class="p">(</span><span class="nx">token</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">Claims</span><span class="p">{},</span> <span class="kd">func</span><span class="p">(</span><span class="nx">token</span> <span class="o">*</span><span class="nx">jwt</span><span class="p">.</span><span class="nx">Token</span><span class="p">)</span> <span class="p">(</span><span class="kd">interface</span><span class="p">{},</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">jwtSecret</span><span class="p">,</span> <span class="kc">nil</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="nx">tokenClaims</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="c1">// tokenClaims.Valid 判断expireTime
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">claims</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">tokenClaims</span><span class="p">.</span><span class="nx">Claims</span><span class="p">.(</span><span class="o">*</span><span class="nx">Claims</span><span class="p">);</span> <span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">tokenClaims</span><span class="p">.</span><span class="nx">Valid</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">claims</span><span class="p">,</span> <span class="kc">nil</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="3-jwt-中间件的使用">3. JWT 中间件的使用</h2>
+<h3 id="31-编写中间件函数">3.1 编写中间件函数</h3>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">JWTAuth</span><span class="p">()</span> <span class="nx">gin</span><span class="p">.</span><span class="nx">HandlerFunc</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kd">func</span><span class="p">(</span><span class="nx">c</span> <span class="o">*</span><span class="nx">gin</span><span class="p">.</span><span class="nx">Context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">token</span> <span class="o">:=</span> <span class="nx">c</span><span class="p">.</span><span class="nx">Request</span><span class="p">.</span><span class="nx">Header</span><span class="p">.</span><span class="nf">Get</span><span class="p">(</span><span class="s">&#34;token&#34;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">token</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusUnauthorized</span><span class="p">,</span> <span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span>
+                <span class="s">&#34;code&#34;</span><span class="p">:</span> <span class="mi">40001</span><span class="p">,</span>
+                <span class="s">&#34;msg&#34;</span><span class="p">:</span>  <span class="s">&#34;请求未携带token, 无权限访问&#34;</span><span class="p">,</span>
+            <span class="p">})</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">Abort</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+
+        <span class="nx">claims</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">ParseToken</span><span class="p">(</span><span class="nx">token</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusUnauthorized</span><span class="p">,</span> <span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span>
+                <span class="s">&#34;code&#34;</span><span class="p">:</span> <span class="mi">40001</span><span class="p">,</span>
+                <span class="s">&#34;msg&#34;</span><span class="p">:</span>  <span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(),</span>
+            <span class="p">})</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">Abort</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+
+        <span class="c1">// check if token is valid
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">claims</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusUnauthorized</span><span class="p">,</span> <span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span>
+                <span class="s">&#34;code&#34;</span><span class="p">:</span> <span class="mi">40001</span><span class="p">,</span>
+                <span class="s">&#34;msg&#34;</span><span class="p">:</span>  <span class="s">&#34;token error&#34;</span><span class="p">,</span>
+            <span class="p">})</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">Abort</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+
+        <span class="c1">// 查询数据库，判断token携带的用户信息是否有效
+</span><span class="c1"></span>        <span class="k">if</span> <span class="nx">authErr</span> <span class="o">:=</span> <span class="nx">repository</span><span class="p">.</span><span class="nf">Auth</span><span class="p">(</span><span class="nx">claims</span><span class="p">.</span><span class="nx">Email</span><span class="p">,</span> <span class="nx">claims</span><span class="p">.</span><span class="nx">Password</span><span class="p">);</span> <span class="nx">authErr</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">JSON</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">StatusUnauthorized</span><span class="p">,</span> <span class="nx">gin</span><span class="p">.</span><span class="nx">H</span><span class="p">{</span>
+                <span class="s">&#34;code&#34;</span><span class="p">:</span> <span class="mi">40001</span><span class="p">,</span>
+                <span class="s">&#34;msg&#34;</span><span class="p">:</span>  <span class="s">&#34;token error&#34;</span><span class="p">,</span>
+            <span class="p">})</span>
+            <span class="nx">c</span><span class="p">.</span><span class="nf">Abort</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        <span class="nx">c</span><span class="p">.</span><span class="nf">Set</span><span class="p">(</span><span class="s">&#34;claims&#34;</span><span class="p">,</span> <span class="nx">claims</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p><code> repository.Auth()</code> 定义为</p>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">Auth</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">user</span> <span class="nx">model</span><span class="p">.</span><span class="nx">User</span>
+    <span class="kd">var</span> <span class="nx">err</span> <span class="kt">error</span>
+    <span class="k">if</span> <span class="nx">err</span> <span class="p">=</span> <span class="nx">DB</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="s">&#34;email = ?&#34;</span><span class="p">,</span> <span class="nx">email</span><span class="p">).</span><span class="nf">First</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">user</span><span class="p">).</span><span class="nx">Error</span><span class="p">;</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">err</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nx">user</span><span class="p">.</span><span class="nx">Password</span> <span class="o">!=</span> <span class="nx">password</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;incorrect email or password&#34;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div><h3 id="32-jwt-的使用">3.2 JWT 的使用</h3>
+<div class="highlight"><pre class="chroma"><code class="language-go" data-lang="go"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">r</span> <span class="o">:=</span> <span class="nx">gin</span><span class="p">.</span><span class="nf">Default</span><span class="p">()</span>
+    <span class="nx">r</span><span class="p">.</span><span class="nf">Use</span><span class="p">(</span><span class="nf">JWTAuth</span><span class="p">())</span>
+<span class="p">}</span>
+</code></pre></div><p>这样，所有路由都需经过JWT验证，也可以对某一 routerGroup 的接口作身份验证</p>
+</article><section class="article labels"><a class="category" href=/categories/gin/>Gin</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/nodejs/cookie-session-in-express/"><span class="iconfont icon-article"></span>Express.js 中 cookie 和 session 的使用</a></p><p><a class="link" href="/posts/docker/install-docker-on-macos/"><span class="iconfont icon-article"></span>Mac下安装Docker及MySQL</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>

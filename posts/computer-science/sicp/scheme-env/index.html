@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Scheme 环境搭建&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Scheme 环境搭建" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Scheme 环境搭建</h1><p class="article date">2021-04-22</p></section><article class="article markdown-body"><h2 id="mit-scheme">MIT-Scheme</h2>
+<p>在 Mac 上，使用 homebrew 安装</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">brew install Caskroom/cask/xquartz
+brew install mit-scheme
+</code></pre></div><p>然后执行</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">Scheme
+</code></pre></div><p>命令进入 Scheme 解释器</p>
+<h2 id="emacs">Emacs</h2>
+<p>另一种方式是安装 emacs，它自带 lisp 解释器</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">brew cask install emacs
+</code></pre></div><p>不过 emacs 的使用也需要学习一下，输入命令 <code>emacs</code> 打开它，然后可以直接输入程序，如</p>
+<div class="highlight"><pre class="chroma"><code class="language-lisp" data-lang="lisp"><span class="p">(</span><span class="nf">+</span> <span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div><p>将光标移至该行末尾，按下 <code>Ctrl-x Ctrl-e</code> 即可执行改行代码，执行结果在界面的最下方显示
+<code>Ctrl-x Ctrl-c</code> 关闭 <code>emacs</code></p>
+<p>关于 <code>emacs</code>，我也是正在学习中</p>
+</article><section class="article labels"><a class="category" href=/categories/sicp/>SICP</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/java/jvm/class_file/"><span class="iconfont icon-article"></span>Java Class 文件</a></p><p><a class="link" href="/posts/terminal/ssh-shortcut/"><span class="iconfont icon-article"></span>配置SSH快捷连接</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>摩尔投票算法&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="摩尔投票算法" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">摩尔投票算法</h1><p class="article date">2020-09-27</p></section><article class="article markdown-body"><p>leetcode 169. 多数元素(majority element)</p>
+<p>给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。</p>
+<p>你可以假设数组是非空的，并且给定的数组总是存在多数元素。</p>
+<p>示例1</p>
+<pre><code>输入: [3,2,3]
+输出: 3
+</code></pre><p>示例2</p>
+<pre><code>输入: [2,2,1,1,1,2,2]
+输出: 2
+</code></pre><p>一些常用解法：</p>
+<ol>
+<li>遍历每一个元素，并计数</li>
+<li>排序，找到位置为 <code>n/2</code> 处的元素</li>
+</ol>
+<p>摩尔投票法的基本思想很简单，在每一轮投票过程中，从数组中找出一对不同的元素，将其从数组中删除。这样不断的删除直到无法再进行投票，如果数组为空，则没有任何元素出现的次数超过该数组长度的一半。如果只存在一种元素，那么这个元素则可能为目标元素。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+    
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">majorityElement</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">nums</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">maj</span> <span class="o">=</span> <span class="n">nums</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nums</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">maj</span> <span class="o">==</span> <span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">{</span>
+                <span class="n">count</span><span class="o">++;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">count</span><span class="o">--;</span>
+                <span class="n">maj</span> <span class="o">=</span> <span class="n">count</span> <span class="o">==</span> <span class="n">0</span> <span class="o">?</span> <span class="n">nums</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">]</span> <span class="o">:</span> <span class="n">maj</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">maj</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Main</span> <span class="n">m</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Main</span><span class="o">();</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">ary1</span> <span class="o">=</span> <span class="o">{</span><span class="n">3</span><span class="o">,</span><span class="n">2</span><span class="o">,</span><span class="n">3</span><span class="o">};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">ary2</span> <span class="o">=</span> <span class="o">{</span><span class="n">2</span><span class="o">,</span><span class="n">2</span><span class="o">,</span><span class="n">1</span><span class="o">,</span><span class="n">1</span><span class="o">,</span><span class="n">1</span><span class="o">,</span><span class="n">2</span><span class="o">,</span><span class="n">2</span><span class="o">};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">ary3</span> <span class="o">=</span> <span class="o">{</span><span class="n">3</span><span class="o">,</span> <span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">};</span>
+        <span class="kt">int</span> <span class="n">m1</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">majorityElement</span><span class="o">(</span><span class="n">ary1</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">m2</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">majorityElement</span><span class="o">(</span><span class="n">ary2</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">m3</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">majorityElement</span><span class="o">(</span><span class="n">ary3</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">m1</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">m2</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">m3</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></article><section class="article labels"><a class="category" href=/categories/leetcode/>LeetCode</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/java/spring/cron/"><span class="iconfont icon-article"></span>@Scheduled(cron = "") 表达式</a></p><p><a class="link" href="/posts/leetcode/sort-algorithms/"><span class="iconfont icon-article"></span>常见排序算法总结</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>

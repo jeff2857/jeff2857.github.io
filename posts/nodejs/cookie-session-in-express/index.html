@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Express.js 中 cookie 和 session 的使用&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Express.js 中 cookie 和 session 的使用" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Express.js 中 cookie 和 session 的使用</h1><p class="article date">2019-09-13</p></section><article class="article markdown-body"><p>HTTP 协议是无状态的，即服务器无法识别两条 http 请求是否由同一客户端发起，cookie 和 session 就是用来记录状态、确定请求的客户端身份。</p>
+<h2 id="cookie">cookie</h2>
+<h3 id="概念">概念</h3>
+<p>cookie 由服务端发起，对不同的用户发送不同的标识，客户端在之后的请求头中加入这个标识，服务端就可以通过这个标识来识别用户的身份，步骤如下：</p>
+<ul>
+<li>服务端向客户端发送 cookie
+<ul>
+<li>使用 HTTP 协议规定的 set-cookie 头操作</li>
+<li>规范规定的 cookie 格式为  <code>name=value</code></li>
+</ul>
+</li>
+<li>浏览器保存 cookie</li>
+<li>之后的请求中携带该 cookie</li>
+</ul>
+<h3 id="在项目中使用">在项目中使用</h3>
+<p>cookie-parser 中间件方便了对 cookie 的解析，可以将 cookie 解析为 <code>{name: value}</code> 格式的对象</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">yarn add cookie-parser
+</code></pre></div><p>引入项目</p>
+<div class="highlight"><pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">cookieParser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cookie-parser&#39;</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cookieParser</span><span class="p">());</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">myCookie</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">cookies</span><span class="p">.</span><span class="nx">myCookie</span><span class="p">);</span> <span class="c1">// 读取 cookie
+</span><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">cookie</span><span class="p">(</span><span class="s1">&#39;myCookie&#39;</span><span class="p">,</span> <span class="s1">&#39;foobar&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">maxAge</span><span class="o">:</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span><span class="p">});</span> <span class="c1">// 存储 cookie，1分钟
+</span><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div><p><code>cookieParser(secret, options)</code> 有两个参数，第一个用来对 cookie 签名，可以是字符串或数组，如果是数组，解密时会一一尝试数组中的每一项作为加密字符串；第二个 options 是可选参数，包括：</p>
+<ul>
+<li>path: 指定 cookie 影响的路径</li>
+<li>expires: cookie 失效时间，UTC 时间格式</li>
+<li>maxAge: cookie 多久后失效，单位毫秒，不设置 expires 和 maxAge 时，会产生 session cookie, session cookie 在关闭浏览器时会被清除，一般用来保存 session 的 session_id</li>
+<li>secure: 当 secure 为 true 时，在 HTTPS 中有效，在 HTTP 中无效；否则在 HTTP 中有效，HTTPS 中无效</li>
+<li>httpOnly: 为 true 时，浏览器不允许脚本操作 document.cookie，避免 XSS 攻击拿到 cookie</li>
+<li>domain: 指定域名</li>
+</ul>
+<h2 id="signedcookies">signedCookies</h2>
+<p>对 cookie 进行签名，这样请求头里的 cookie 数据是加密后的，在服务端 cookie-parser 会自动解密</p>
+<div class="highlight"><pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">cookieParser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cookie-parser&#39;</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cookieParser</span><span class="p">(</span><span class="s1">&#39;my_cookie_secret&#39;</span><span class="p">));</span> <span class="c1">// 设置签名字符串
+</span><span class="c1"></span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">signedCookies</span><span class="p">.</span><span class="nx">myCookie</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">signedCookies</span><span class="p">.</span><span class="nx">myCookie</span><span class="p">);</span> <span class="c1">// 读取 signedCookies，已解密
+</span><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// 存储 cookie，设置 signed 为 true 来加密 cookie
+</span><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">cookie</span><span class="p">(</span><span class="s1">&#39;myCookie&#39;</span><span class="p">,</span> <span class="s1">&#39;foobar&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">maxAge</span><span class="o">:</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span> <span class="nx">signed</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div><h2 id="session">session</h2>
+<p>cookie 的使用很方便，但是有弊端：cookie 中的数据在客户端可以被修改和伪造，而且 cookie 中的数据字段太多会影响传输效率。为了解决这些问题，就产生了 session，session 中的数据存储在服务端</p>
+<p>session 的运作通过 session_id 来进行，session_id 通常存放在客户端的 cookie 中，在 express 中默认是 <code>connect.sid</code> 字段，服务端会检查请求头中 cookie 所保存的 session_id 并与服务端的 session data 关联，进行数据的操作</p>
+<p>也就是说，服务端会产生一个 1024 比特长的字符串，存储在 cookie 的 <code>connect.sid</code> 中，之后的请求会带有这个字符串，服务端就可以从 redis 等存储中拿到对应身份的数据</p>
+<p>session 可以存放的位置有内存、cookie、redis、memecached 或数据库，通常会存储在 redis 和 memcached 缓存中</p>
+<p>在 express 中使用 session 需要 <code>express-session</code> 中间价</p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">yarn add express-session
+</code></pre></div><p>在项目中使用</p>
+<div class="highlight"><pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;express-session&#39;</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">session</span><span class="p">({</span>
+  <span class="nx">secret</span><span class="o">:</span> <span class="s1">&#39;my_session_secret&#39;</span><span class="p">,</span>
+  <span class="nx">cookie</span><span class="o">:</span> <span class="p">{</span><span class="nx">maxAge</span><span class="o">:</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">60</span><span class="p">}</span>
+<span class="p">}));</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">mySession</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">mySession</span><span class="p">);</span> <span class="c1">// 读取 session
+</span><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">req</span><span class="p">.</span><span class="nx">session</span><span class="p">.</span><span class="nx">mySession</span> <span class="o">=</span> <span class="s1">&#39;foobar&#39;</span><span class="p">;</span> <span class="c1">// 写入 session
+</span><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div><p><code>session(options)</code> 参数</p>
+<ul>
+<li>name: 设置 cookie 中保存 session 的字段名称，默认为 <code>connect.sid</code></li>
+<li>store: session 的存储方式，默认存放在内存中，也可以存放在 redis 等缓存中</li>
+<li>secret: 签名字符串，用来计算 hash 值并存放在 cookie 中</li>
+<li>cookie: 设置存放 session_id 的 cookie 的相关选项，默认为
+<ul>
+<li><code>{path: '/', httpOnly: true, secure: false, maxAge: null}</code></li>
+</ul>
+</li>
+<li>genid: 产生一个新的 session_id 时使用的函数，默认使用 uid2 这个 npm 包</li>
+<li>rolling: 每个请求都重新设置一个 cookie，默认 false</li>
+<li>resave: 即使 session 没有被修改，也保存 session 值，默认 true</li>
+<li>saveUninitialized: 强制未初始化的session保存到数据库</li>
+</ul>
+<h2 id="cookie-session">cookie session</h2>
+<p>cookie session 就是将 session 存储在 cookie 中，比如存储用户数据</p>
+<div class="highlight"><pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">sessionData</span> <span class="o">=</span> <span class="p">{</span><span class="nx">username</span><span class="o">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">};</span>
+</code></pre></div><p>对该数据与 secret 字符串做加密，将加密后的字符串存储到 cookie 的 session_data 字段中，之后的请求解密 session_data 即可</p>
+<h2 id="redis-中存储-session">redis 中存储 session</h2>
+<p>在 redis 中存储 session，需要 <code>redis</code> 和 <code>connect-redis</code></p>
+<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">yarn add redis connect-redis
+</code></pre></div><p>在项目中使用</p>
+<div class="highlight"><pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kr">const</span> <span class="nx">redis</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;redis&#39;</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">);</span>
+
+<span class="kd">let</span> <span class="nx">RedisStore</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;connect-redis&#39;</span><span class="p">)(</span><span class="nx">session</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">redisClient</span> <span class="o">=</span> <span class="nx">redis</span><span class="p">.</span><span class="nx">createClient</span><span class="p">({</span>
+  <span class="nx">host</span><span class="o">:</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+  <span class="nx">port</span><span class="o">:</span> <span class="mi">6379</span><span class="p">,</span>
+  <span class="nx">db</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="nx">password</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">session</span><span class="p">({</span>
+  <span class="nx">secret</span><span class="o">:</span> <span class="s1">&#39;my_session_secret&#39;</span><span class="p">,</span>
+  <span class="nx">resave</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nx">saveUnintialized</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nx">store</span><span class="o">:</span> <span class="k">new</span> <span class="nx">RedisStore</span><span class="p">({</span><span class="nx">client</span><span class="o">:</span> <span class="nx">redisClient</span><span class="p">})</span>
+<span class="p">}))</span>
+</code></pre></div></article><section class="article labels"><a class="category" href=/categories/nodejs/>NodeJS</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/tools/v2ray/"><span class="iconfont icon-article"></span>vultr + v2ray 实现科学上网及 websocket + tls 流量伪装</a></p><p><a class="link" href="/posts/golang/gin/jwt/"><span class="iconfont icon-article"></span>Gin框架中JWT的使用初探</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>

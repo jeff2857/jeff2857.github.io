@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Java Class 文件&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Java Class 文件" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Java Class 文件</h1><p class="article date">2021-04-27</p></section><article class="article markdown-body"><p>(未完待续)</p>
+<h2 id="简介">简介</h2>
+<p>class 文件是二进制格式的，它包含了被 JVM 执行的代码。由于 class 文件是由 JVM 来执行的，所以它不依赖特定硬件和操作系统。class 文件格式中定义了类与接口的表示形式，包括平台相关的一些细节（如字节序，A平台为大端序存储，B平台为小端序存储）等。</p>
+<h2 id="数据类型">数据类型</h2>
+<p>JVM 可以操作的数据类型分为两类：<strong>原始类型</strong>(primitive type) 和 <strong>引用类型</strong>(reference type)。其中数值类型也分为两类：<strong>原始值</strong>(primitive value) 和 <strong>引用值</strong>(reference value)。</p>
+<h3 id="原始类型">原始类型</h3>
+<p>其中，<strong>原始类型</strong> 包括：<strong>数值类型</strong>(numeric type)，<strong>布尔类型</strong> 和 <strong>returnAddress类型</strong>。</p>
+<ul>
+<li>数值类型
+<ul>
+<li>整数类型
+<ul>
+<li>byte 8位有符号二进制补码整数，默认值为0</li>
+<li>short 16位有符号二进制补码整数，默认值为0</li>
+<li>int 32位有符号二进制补码整数，默认值为0</li>
+<li>long 64位有符号二进制补码整数，默认值为0</li>
+<li>char 16位无符号整数表示的 Unicode 码点，以 UTF-16 编码，默认值为 Unicode 的 null 码点('\u0000')</li>
+</ul>
+</li>
+<li>浮点类型
+<ul>
+<li>float 值为单精度浮点数集合中的元素，或是单精度扩展指数集合中的元素，默认值为正数0</li>
+<li>double 值为双精度浮点数集合中的元素，或是双精度扩展指数集合中的元素，默认值为正数0</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>布尔类型
+<ul>
+<li>true</li>
+<li>false 默认值</li>
+</ul>
+</li>
+<li>returnAddress类型 指向某个操作码(opcode)的指针</li>
+</ul>
+<p>所有 JVM 的实现都必须支持两种标准的浮点值集合：<strong>单精度浮点数集合</strong> 和 <strong>双精度浮点数集合</strong>。此外，可以选择是否支持 <strong>单精度扩展指数集合</strong> 和 <strong>双精度扩展指数集合</strong> 中的一种或全部。</p>
+<p>NaN 和任何数值进行等值比较都会返回 false，包括与它自身比较。任何数字与 NaN 进行不等值比较都会返回 true。</p>
+<p>Java 语言中的 boolean 类型在 JVM 中由 int 类型代替；Java 语言中的 boolean 数组类型在 JVM 中由 byte 数组类型代替。true 用1表示，false 用0表示。</p>
+<h3 id="引用类型">引用类型</h3>
+<p>JVM 中有三种引用类型：<strong>类类型</strong>(class type)，<strong>数组类型</strong>(array type) 和 <strong>接口类型</strong>(interface type)。这些类型的值分别指向动态创建的类实例，数组实例和实现了某个接口的类实例或数组实例。</p>
+<p>数组类型最外面那一维元素的类型，称为该数组类型的<strong>组件类型</strong>(component type)。如对于 <code>int[][][]</code> 这种数组类型来说，其组件类型为 <code>int[][]</code>。</p>
+<p>一个数组的组件类型也可以是数组，从任意一个数组开始，若其组件类型也是数组类型，则继续取这个小数组的组件类型，直到组件类型不是数组，那么该类型就是这个数组类型的<strong>元素类型</strong>(element type)。数组的元素类型必须是原始类型、类类型或接口类型之一。</p>
+<p>null 是引用类型的默认值，它可以转换为任意的引用类型。</p>
+</article><section class="article labels"><a class="category" href=/categories/jvm/>JVM</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/computer-science/sicp/scheme-env/"><span class="iconfont icon-article"></span>Scheme 环境搭建</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>

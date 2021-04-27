@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>常见排序算法总结&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="常见排序算法总结" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">常见排序算法总结</h1><p class="article date">2020-05-19</p></section><article class="article markdown-body"><p>(未完待续)</p>
+<h2 id="冒泡排序">冒泡排序</h2>
+<p>冒泡排序比较简单，以从小到大排序为例，从索引为0的位置向后遍历数组，每次遍历比较当前元素和下一个元素的值，若当前元素值较大，则交换两个元素，继续向后遍历，这样一轮遍历下来，最后一个元素为该数组中的最大值；继续从索引为0的位置开始，按相同的方法遍历至倒数第二个元素，这一轮下来，倒数第二个元素就是倒数第二大的值；重复上述步骤，直到整个数组都排好序
+时间复杂度 <code>O(n^2)</code>，示例代码如下</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">bubbleSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">ary</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// 外层循环为遍历的轮数
+</span><span class="c1"></span>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ary</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="c1">// 内层循环为每一轮对数组的遍历
+</span><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">ary</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">ary</span><span class="o">[</span><span class="n">j</span> <span class="o">-</span> <span class="n">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">])</span> <span class="o">{</span> <span class="c1">// 比较当前元素和下一个元素的值
+</span><span class="c1"></span>                <span class="kt">int</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">ary</span><span class="o">[</span><span class="n">j</span> <span class="o">-</span> <span class="n">1</span><span class="o">];</span> <span class="c1">// 若当前值较大，则交换两个元素
+</span><span class="c1"></span>                <span class="n">ary</span><span class="o">[</span><span class="n">j</span> <span class="o">-</span> <span class="n">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+                <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="选择排序">选择排序</h2>
+<p>以从小到大排序为例，从索引为0的位置向后遍历，记录每次遍历开始位置的索引 i，同时用变量 lowIndex 标记每轮循环中值最小的元素索引，在每轮循环结束后，交换位置 i 和位置 lowIndex 的元素，第一轮结束后，位置 i 处为数组最小值；将 i + 1，第二轮遍历遍历结束并交换相应元素位置后，数组第二个位置为第二小元素；重复上述步骤，直到所有元素都排好序
+时间复杂度 <code>O(n^2)</code>，示例代码如下</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">selectSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">ary</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ary</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">lowIndex</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span> <span class="c1">// 初始化 lowIndex 为数组未排序部分的第一个元素
+</span><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">ary</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="c1">// 找到未排序部分值最小的元素索引
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">ary</span><span class="o">[</span><span class="n">lowIndex</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">])</span> <span class="o">{</span>
+                <span class="n">lowIndex</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// 交换位置 i 和位置 lowIndex 的元素
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">ary</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+        <span class="n">ary</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">ary</span><span class="o">[</span><span class="n">lowIndex</span><span class="o">];</span>
+        <span class="n">ary</span><span class="o">[</span><span class="n">lowIndex</span><span class="o">]</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="插入排序">插入排序</h2>
+<p>以从小到大排序为例，首先将索引为0的元素作为已排好序的元素，拿索引为1的元素与第一个元素作比较，若比第一个元素的值大，则将第二个元素插入第一个元素前；接着拿索引为2的元素依次与它之前的元素比较，直到插入到合适的位置；不断拿下一个位置的元素重复上述步骤，直到所有元素都排好序
+时间复杂度<code>O(n^2)</code>，示例代码如下</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">insertSort</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">ary</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// 从索引为1的元素开始
+</span><span class="c1"></span>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ary</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">key</span> <span class="o">=</span> <span class="n">ary</span><span class="o">[</span><span class="n">i</span><span class="o">];</span> <span class="c1">// 当前元素
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+        <span class="c1">// 拿当前元素与它前面的元素依次比较，不满足条件则将元素后移，否则插入元素
+</span><span class="c1"></span>        <span class="k">while</span> <span class="o">(</span><span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">key</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">--];</span> <span class="c1">// 后移元素
+</span><span class="c1"></span>        <span class="o">}</span>
+        <span class="n">ary</span><span class="o">[</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span> <span class="c1">// 插入当前元素
+</span><span class="c1"></span>    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="希尔排序">希尔排序</h2>
+</article><section class="article labels"><a class="category" href=/categories/leetcode/>LeetCode</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/leetcode/majority-element/"><span class="iconfont icon-article"></span>摩尔投票算法</a></p><p><a class="link" href="/posts/docker/install-docker-on-centos8/"><span class="iconfont icon-article"></span>Centos8 安装 Docker 过程及错误解决</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>
