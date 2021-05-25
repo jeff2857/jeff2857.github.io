@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Java Generics&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Java Generics" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Java Generics</h1><p class="article date">2021-05-25</p></section><article class="article markdown-body"><h2 id="泛型的概念">泛型的概念</h2>
+<p>泛型，也就是<strong>把类型参数化</strong>。比如定义一个方法，他需要对几种不同的数据类型做相同的处理，如果不用泛型，那我们就需要定义好几个方法，每个方法对应每种数据类型。这几个方法只是参数类型不同，方法体都是一样的，那么就显得很冗余。</p>
+<p>拿比较常用的 <code>List</code> 举例，假设他不支持泛型，那我们就需要一个 <code>StringList</code> 来存放字符串，一个 <code>IntegerList</code> 来存放整型，一个 <code>DoubleList</code> 来存放双精度浮点型等等。另外，对于我们自己定义的类，也需要再定义很多 <code>List</code> 来分别存放他们。而这些 <code>List</code> 提供的功能都是一样的：添加数据、读取数据。</p>
+<p><code>List</code> 里面可以存放任意类型的数据，这里我们创建一个 <code>List</code>，并添加一个字符串和一个整型数据。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">List</span> <span class="n">myList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+<span class="n">myList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">);</span>
+<span class="n">myList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">23</span><span class="o">);</span>
+</code></pre></div><p>在需要从 <code>myList</code> 中读取数据时，对于不同的数据类型，就要做对应的类型转换了。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">String</span> <span class="n">strElem</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">myList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">0</span><span class="o">);</span>
+<span class="n">Integer</span> <span class="n">intElem</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">myList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+</code></pre></div><p>显然，我们需要记住数组中每个元素是什么类型的，如果在读取数据时搞乱了，比如第 0 个元素是字符串，我们却记成了整型</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">Integer</span> <span class="n">intElem</span> <span class="o">=</span> <span class="o">(</span><span class="n">Integer</span><span class="o">)</span> <span class="n">myList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">0</span><span class="o">);</span>
+</code></pre></div><p>自然就会抛出一个类型转换的错误，导致程序异常。<strong>泛型</strong>的出现很好地解决了这个问题。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">myStrList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">myIntList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+<span class="n">myStrList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;hello&#34;</span><span class="o">);</span>
+<span class="n">myIntList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">23</span><span class="o">);</span>
+</code></pre></div><p>这样就规定了 <code>myStrList</code> 中只能存放字符串类型，<code>myIntList</code> 中只能存放整型。如果你在 <code>myStrList</code> 中添加了一个非字符串的类型，是不会编译通过的。</p>
+<h2 id="类型擦除">类型擦除</h2>
+<p>泛型信息只存在于编译阶段，编译完成后，所有的泛型信息都会被擦除，也就是说在 JVM 执行代码阶段，是不存在泛型这个概念的，这就是类型擦除。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">myStrList</span><span class="o">.</span><span class="na">getClass</span><span class="o">()</span> <span class="o">==</span> <span class="n">myIntList</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">myStrList</span><span class="o">.</span><span class="na">getClass</span><span class="o">());</span>
+</code></pre></div><p>执行这段代码，会输出 <code>true</code>，表示在 JVM 中，<code>myStrList</code> 和 <code>myIntList</code> 的 <code>Class</code> 是同一个，并且在输出的第二行打印出了 <code>class java.util.ArrayList</code>，这里并不包含泛型信息。</p>
+<p>既然泛型信息被擦除了，那么 JVM 在执行阶段是怎么确定不同的 <code>List</code> 中存放的是什么数据类型呢？</p>
+<p>我们定义一个泛型类，并通过反射看一下其中的泛型在编译后是什么样的</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">MyGeneric</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="n">T</span> <span class="n">object</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">MyGeneric</span><span class="o">(</span><span class="n">T</span> <span class="n">object</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">object</span> <span class="o">=</span> <span class="n">object</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">MyGeneric</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">myGeneric</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyGeneric</span><span class="o">&lt;&gt;(</span><span class="s">&#34;hello&#34;</span><span class="o">);</span>
+
+        <span class="n">Class</span> <span class="n">myClz</span> <span class="o">=</span> <span class="n">myGeneric</span><span class="o">.</span><span class="na">getClass</span><span class="o">();</span>
+        <span class="n">Field</span><span class="o">[]</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">myClz</span><span class="o">.</span><span class="na">getDeclaredFields</span><span class="o">();</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="n">Field</span> <span class="n">f</span> <span class="o">:</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;field: &#34;</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;, type: &#34;</span> <span class="o">+</span> <span class="n">f</span><span class="o">.</span><span class="na">getType</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>输出为：</p>
+<pre><code>field: object, type: java.lang.Object
+</code></pre><p>可以看到，其中的泛型类型变成了 <code>Object</code>。我们改一下 <code>MyGeneric</code> 的泛型部分</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">MyGeneric</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="c1">// ...省略
+</span><span class="c1"></span><span class="o">}</span>
+</code></pre></div><p>再次编译运行，输出为：</p>
+<pre><code>field: object, type: java.lang.String
+</code></pre><p>这样我们就可以确定，在对泛型做类型擦除时，如果没有指定类型的上限，那么这个类型会被编译为 <code>Object</code> 类型；如果指定了上限，那么他会被编译为这个上限的类型。</p>
+<p>既然在编译后类型会被擦除，那么我们就可以通过反射来绕过在泛型中的类型限制。比如定义了一个 <code>List&lt;Integer&gt;</code> 类型，就可以通过反射调用他的 <code>add()</code> 方法向其中添加非 <code>Integer</code> 类型的数据。</p>
+<p>还有一个问题：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;[]</span> <span class="n">myList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;[];</span>
+</code></pre></div><p>这里 <code>myList</code> 是一个数组，他的每个元素是 <code>List&lt;Integer&gt;</code> 类型的。由于会有类型擦除，导致程序无法分辨元素的类型，这行代码是无法编译通过的。</p>
+<h2 id="泛型的使用">泛型的使用</h2>
+<p>泛型有三种使用方式：泛型类，泛型方法，泛型接口。</p>
+<h3 id="泛型类">泛型类</h3>
+<p>我们来看泛型类的写法：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">类名</span> <span class="o">&lt;</span><span class="n">泛型标识</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">泛型标识</span> <span class="n">变量</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">类名</span><span class="o">(</span><span class="n">泛型标识</span> <span class="n">形参</span><span class="o">)</span> <span class="o">{</span>
+        
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">方法名</span><span class="o">(</span><span class="n">泛型标识</span> <span class="n">形参</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>其中泛型标识可以是一个，比如 <code>&lt;T&gt;</code>，也可以是多个，比如 <code>&lt;T, E&gt;</code>。上文的 <code>MyGeneric</code> 就是一个泛型类，再比如 <code>HashMap</code> 使用了两个泛型标识，第一个指定键的类型，第二个指定值的类型，用法 <code>new HashMap&lt;String, Integer&gt;</code>。</p>
+<p>实例化泛型类：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">泛型类</span><span class="o">&lt;</span><span class="n">具体类型</span><span class="o">&gt;</span> <span class="n">变量名</span> <span class="o">=</span> <span class="k">new</span> <span class="n">泛型类</span><span class="o">&lt;&gt;(</span><span class="n">具体类型</span> <span class="n">参数</span><span class="o">);</span>
+</code></pre></div><p>第二个 <code>&lt;&gt;</code> 中的具体类型是可以省略的，因为编译器从第一个 <code>&lt;&gt;</code> 中已经获得了具体类型。</p>
+<p>当然，实例化泛型类时，也可以不用指定具体类型，比如我们在 <code>List</code> 中可以添加任意类型的数据。</p>
+<h3 id="泛型方法">泛型方法</h3>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="o">&lt;</span><span class="n">泛型标识</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">method1</span><span class="o">(</span><span class="n">泛型标识</span> <span class="n">参数</span><span class="o">)</span> <span class="o">{}</span>
+
+<span class="kd">public</span> <span class="o">&lt;</span><span class="n">泛型标识</span><span class="o">&gt;</span> <span class="n">泛型标识</span> <span class="nf">method2</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">// value 是泛型标识限定的类型
+</span><span class="c1"></span>    <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div><p>比如在上文的 <code>MyGeneric</code> 类中，添加一个获取 <code>object</code> 数据的方法：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">getObject</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">object</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div><p>泛型方法与泛型类可以共存，也可以只定义其中一个。</p>
+<h3 id="泛型接口">泛型接口</h3>
+<p>泛型接口的定义跟泛型类的定义类似：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">接口名</span><span class="o">&lt;</span><span class="n">泛型标识</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="n">泛型标识</span> <span class="nf">方法名</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div><p>实现泛型接口时，可以指定具体的泛型类型，也可以不指定：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">MyInterface</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="n">T</span> <span class="nf">method1</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="c1">// 不指定具体类型
+</span><span class="c1"></span><span class="kd">class</span> <span class="nc">MyClassA</span> <span class="kd">implements</span> <span class="n">MyInterface</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="n">T</span> <span class="nf">method1</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// 指定具体类型
+</span><span class="c1"></span><span class="kd">class</span> <span class="nc">MyClassB</span> <span class="kd">implements</span> <span class="n">MyInterface</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="n">String</span> <span class="nf">method1</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><h2 id="泛型通配符">泛型通配符</h2>
+<p>常用的泛型通配符有：T, E, K, V, ?</p>
+<p>其中：</p>
+<ul>
+<li>T (type) 表示具体的一个 Java 类型</li>
+<li>K, V (key, value) 表示键和值</li>
+<li>E (element) 表示元素</li>
+<li>? 表示任意的类型</li>
+</ul>
+<p><code>?</code> 通配符可以指定类型范围，有三种形式：</p>
+<ul>
+<li><code>&lt;?&gt;</code> 任意类型</li>
+<li><code>&lt;? extends T&gt;</code> 指定类型上限，表示类型 T 及其子类</li>
+<li><code>&lt;? super T&gt;</code> 指定类型下限，表示类型 T 及其超类（父类）</li>
+</ul>
+</article><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/vim/golang-ide/"><span class="iconfont icon-article"></span>vim 配置 Golang 开发</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>
