@@ -148,6 +148,77 @@
     </item>
     
     <item>
+      <title>Java Object Class</title>
+      <link>https://jeff2857.github.io/posts/java/basic/object/</link>
+      <pubDate>Tue, 25 May 2021 17:45:59 +0800</pubDate>
+      
+      <guid>https://jeff2857.github.io/posts/java/basic/object/</guid>
+      <description>&lt;p&gt;&lt;code&gt;Object&lt;/code&gt; 是所有类的基类，他有一些方法是我们经常用到的，比如 &lt;code&gt;equals(Object obj)&lt;/code&gt;, &lt;code&gt;hashCode()&lt;/code&gt;, 还有并发编程中用到的 &lt;code&gt;notify()&lt;/code&gt;, &lt;code&gt;wait()&lt;/code&gt; 等。&lt;/p&gt;
+&lt;p&gt;定义一个类时，如果没有用 &lt;code&gt;extends&lt;/code&gt; 去继承其他类，那么他会隐式地继承 &lt;code&gt;Object&lt;/code&gt; 类，我们也可以显式地去继承 &lt;code&gt;Object&lt;/code&gt; 类，这两种方式是一样的。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// 隐式
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;MyClass&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;
+
+&lt;span class=&#34;c1&#34;&gt;// 显式
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;MyClass&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;extends&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Object&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Object&lt;/code&gt; 类中有一些方法是值得关注的，我们来看。&lt;/p&gt;
+&lt;h2 id=&#34;clone&#34;&gt;clone()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;protected&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Object&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;clone&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CloneNotSupportedException&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;clone()&lt;/code&gt; 方法用于创建并返回一个对象的拷贝。值得注意的是，默认的 &lt;code&gt;clone()&lt;/code&gt; 方法是浅拷贝，对于深拷贝，你可以在 &lt;code&gt;clone()&lt;/code&gt; 方法中自己去实现。&lt;/p&gt;
+&lt;h2 id=&#34;equalsobject-obj&#34;&gt;equals(Object obj)&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;boolean&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;equals&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Object&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;obj&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认的 &lt;code&gt;Object.equlas()&lt;/code&gt; 方法是这样的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;boolean&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;equals&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Object&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;obj&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;this&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;obj&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们先看一下这个 &lt;code&gt;==&lt;/code&gt; 符号：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于基本类型，他比较的是值&lt;/li&gt;
+&lt;li&gt;对于引用类型，他比较的是对象的内存地址&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;所以在这个 &lt;code&gt;equals()&lt;/code&gt; 方法中，比较的是两个对象的内存地址，即两个对象是否是同一个对象。&lt;/p&gt;
+&lt;p&gt;一般我们会重写 &lt;code&gt;equals()&lt;/code&gt; 方法，比如判断两个对象的属性是否相同，相同则返回 &lt;code&gt;true&lt;/code&gt;，而不是判断是否是同一个对象。拿 &lt;code&gt;String&lt;/code&gt; 类举例，他其实重写了 &lt;code&gt;equals()&lt;/code&gt; 方法，用于判断两个字符串的值，而不是两个 &lt;code&gt;String&lt;/code&gt; 对象的内存地址。&lt;/p&gt;
+&lt;h2 id=&#34;hashcode&#34;&gt;hashCode()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;hashCode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;hashCode()&lt;/code&gt; 方法通常用在基于 hash 的集合类中，如 &lt;code&gt;HashMap&lt;/code&gt;，&lt;code&gt;HashSet&lt;/code&gt; 等，他返回这个对象的哈希值。这个哈希值用于确定在基于 hash 的集合类中该对象的索引位置。&lt;/p&gt;
+&lt;p&gt;对两个不同的对象做哈希计算时，可能会出现计算出的哈希值相同的情况，也就是哈希碰撞。我们在重写 &lt;code&gt;equals()&lt;/code&gt; 方法时也会重写 &lt;code&gt;hashCode()&lt;/code&gt; 方法，以保证对象在哈希集合中能正常使用。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hashCode()&lt;/code&gt; 方法有一些规则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在同一个 Java 程序中，对于同一个对象，无论调用多少次 &lt;code&gt;hashCode()&lt;/code&gt; 方法，返回的哈希值必须相同&lt;/li&gt;
+&lt;li&gt;如果两个对象的 &lt;code&gt;equals()&lt;/code&gt; 方法返回值为 &lt;code&gt;true&lt;/code&gt;，那么它们的 &lt;code&gt;hashCode()&lt;/code&gt; 方法应该返回相同数值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;更深入的内容我会在之后的文章里探讨。&lt;/p&gt;
+&lt;h2 id=&#34;tostring&#34;&gt;toString()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;toString&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;他返回一个对象的字符串表示，默认是这样的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;toString&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getClass&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;().&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;getName&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;@&amp;#39;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Integer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;toHexString&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hashCode&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;());&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;为了输出一个对象的属性信息，一般我们会重写这个方法。&lt;/p&gt;
+&lt;h2 id=&#34;getclass&#34;&gt;getClass()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Class&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getClass&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;他返回对象的运行时类，在反射中用的较多。&lt;/p&gt;
+&lt;h2 id=&#34;finalize&#34;&gt;finalize()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;protected&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;finalize&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Throwable&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这个方法用于一个对象被 GC 回收时触发的操作。&lt;/p&gt;
+&lt;h2 id=&#34;wait-waitlong-timeout-waitlong-timeout-int-nanos&#34;&gt;wait(), wait(long timeout), wait(long timeout, int nanos)&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;InterruptedException&lt;/span&gt;
+
+&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;timeout&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nanos&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;InterruptedException&lt;/span&gt;
+
+&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;timeout&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;InterruptedException&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;让当前线程等待直到其他线程调用该对象的 &lt;code&gt;notify()&lt;/code&gt; 或 &lt;code&gt;notifyAll()&lt;/code&gt; 方法。&lt;/p&gt;
+&lt;p&gt;让当前线程等待，直到其他线程调用该对象的 &lt;code&gt;notify()&lt;/code&gt; 或 &lt;code&gt;notifyAll()&lt;/code&gt; 方法，或者是超过了参数设置的超时时间。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;nanos&lt;/code&gt; 参数是以纳秒为单位的额外超时时间。&lt;/p&gt;
+&lt;h2 id=&#34;notify&#34;&gt;notify()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;notify&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;唤醒一个在对象监视器上等待的线程，如果有多个线程在该对象上等待，会任意选择其中一个。&lt;/p&gt;
+&lt;h2 id=&#34;notifyall&#34;&gt;notifyAll()&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;notifyAll&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;唤醒所有在对象监视器上等待的线程。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Java Generics</title>
       <link>https://jeff2857.github.io/posts/java/basic/generics/</link>
       <pubDate>Tue, 25 May 2021 12:01:23 +0800</pubDate>
@@ -696,59 +767,6 @@ Day-of-Week(*每周*)*：*可以用数字1-7表示（1 ＝ 星期日）或用字
 
 “*” 代表整个时间段。
 &lt;/code&gt;&lt;/pre&gt;</description>
-    </item>
-    
-    <item>
-      <title>摩尔投票算法</title>
-      <link>https://jeff2857.github.io/posts/leetcode/majority-element/</link>
-      <pubDate>Sun, 27 Sep 2020 09:10:33 +0800</pubDate>
-      
-      <guid>https://jeff2857.github.io/posts/leetcode/majority-element/</guid>
-      <description>&lt;p&gt;leetcode 169. 多数元素(majority element)&lt;/p&gt;
-&lt;p&gt;给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。&lt;/p&gt;
-&lt;p&gt;你可以假设数组是非空的，并且给定的数组总是存在多数元素。&lt;/p&gt;
-&lt;p&gt;示例1&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;输入: [3,2,3]
-输出: 3
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;示例2&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;输入: [2,2,1,1,1,2,2]
-输出: 2
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;一些常用解法：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;遍历每一个元素，并计数&lt;/li&gt;
-&lt;li&gt;排序，找到位置为 &lt;code&gt;n/2&lt;/code&gt; 处的元素&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;摩尔投票法的基本思想很简单，在每一轮投票过程中，从数组中找出一对不同的元素，将其从数组中删除。这样不断的删除直到无法再进行投票，如果数组为空，则没有任何元素出现的次数超过该数组长度的一半。如果只存在一种元素，那么这个元素则可能为目标元素。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;Main&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-    
-    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;majorityElement&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;];&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;length&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-            &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;maj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-                &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++;&lt;/span&gt;
-            &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-                &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;--;&lt;/span&gt;
-                &lt;span class=&#34;n&#34;&gt;maj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maj&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-            &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-        &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;maj&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-    
-    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;args&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;Main&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Main&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ary1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;};&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ary2&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;};&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ary3&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;};&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;majorityElement&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ary1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m2&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;majorityElement&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ary2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m3&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;majorityElement&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ary3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;System&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;println&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;System&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;println&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;System&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;println&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>
