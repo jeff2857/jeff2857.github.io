@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>Java 中的对象拷贝&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Java 中的对象拷贝" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">Java 中的对象拷贝</h1><p class="article date">2021-06-04</p></section><article class="article markdown-body"><p>有时候我们需要创建一个对象的复制品，这个复制品和原来的对象拥有相同的类型、相同的属性。这个过程就是对象的拷贝。</p>
+<p>Java 中有三种类型的拷贝：浅拷贝(Shallow Copy)，深拷贝(Deep Copy)，延迟拷贝(Lazy Copy)。</p>
+<h2 id="浅拷贝">浅拷贝</h2>
+<p>浅拷贝在复制属性时，有这样两种情况：</p>
+<ul>
+<li>如果属性是基本类型，拷贝的是基本类型的值</li>
+<li>如果属性是引用类型，拷贝的是引用对象的内存地址</li>
+</ul>
+<p>看一个例子吧，这样会更加清晰：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">me.jeff</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">Department</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Department</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Employee</span> <span class="kd">implements</span> <span class="n">Cloneable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">Department</span> <span class="n">department</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">Employee</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">Department</span> <span class="n">department</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">department</span> <span class="o">=</span> <span class="n">department</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Department</span> <span class="nf">getDepartment</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">department</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDepartment</span><span class="o">(</span><span class="n">Department</span> <span class="n">department</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">department</span> <span class="o">=</span> <span class="n">department</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">clone</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">CloneNotSupportedException</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">CloneNotSupportedException</span> <span class="o">{</span>
+        <span class="n">Department</span> <span class="n">departmentA</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Department</span><span class="o">(</span><span class="s">&#34;DepartmentA&#34;</span><span class="o">);</span>
+        <span class="n">Department</span> <span class="n">departmentB</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Department</span><span class="o">(</span><span class="s">&#34;DepartmentB&#34;</span><span class="o">);</span>
+
+        <span class="n">Employee</span> <span class="n">employee1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="s">&#34;Alice&#34;</span><span class="o">,</span> <span class="n">departmentA</span><span class="o">);</span>
+        <span class="n">Employee</span> <span class="n">employee2</span> <span class="o">=</span> <span class="o">(</span><span class="n">Employee</span><span class="o">)</span> <span class="n">employee1</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&#34;employee1: name: %s, department: %s, %s\n&#34;</span><span class="o">,</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&#34;employee2: name: %s, department: %s, %s\n&#34;</span><span class="o">,</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span> <span class="c1">// &lt;1&gt;
+</span><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1 == employee2: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1.name == employee2.name: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getName</span><span class="o">()));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1.department == employee2.department: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">()</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">()));</span>
+
+        <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">setName</span><span class="o">(</span><span class="s">&#34;DepartmentA~&#34;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&#34;employee1: name: %s, department: %s, %s\n&#34;</span><span class="o">,</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&#34;employee2: name: %s, department: %s, %s\n&#34;</span><span class="o">,</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span> <span class="c1">// &lt;2&gt;
+</span><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1.department == employee2.department: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">()</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">()));</span>
+
+        <span class="n">employee1</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&#34;Bob&#34;</span><span class="o">);</span>
+        <span class="n">employee1</span><span class="o">.</span><span class="na">setDepartment</span><span class="o">(</span><span class="n">departmentB</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&#34;employee1: name: %s, department: %s, %s\n&#34;</span><span class="o">,</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(),</span> <span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">&#34;employee2: name: %s, department: %s, %s\n&#34;</span><span class="o">,</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">(),</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span> <span class="c1">// &lt;3&gt;
+</span><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1 == employee2: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1.name == employee2.name: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getName</span><span class="o">()));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;employee1.department == employee2.department: &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">employee1</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">()</span> <span class="o">==</span> <span class="n">employee2</span><span class="o">.</span><span class="na">getDepartment</span><span class="o">()));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>输出为：</p>
+<pre><code>1) employee1: name: Alice, department: me.jeff.Department@1b6d3586, DepartmentA
+2) employee2: name: Alice, department: me.jeff.Department@1b6d3586, DepartmentA
+3) employee1 == employee2: false
+4) employee1.name == employee2.name: true
+5) employee1.department == employee2.department: true
+6) employee1: name: Alice, department: me.jeff.Department@1b6d3586, DepartmentA~
+7) employee2: name: Alice, department: me.jeff.Department@1b6d3586, DepartmentA~
+8) employee1.department == employee2.department: true
+9) employee1: name: Bob, department: me.jeff.Department@4554617c, DepartmentB
+10) employee2: name: Alice, department: me.jeff.Department@1b6d3586, DepartmentA~
+11) employee1 == employee2: false
+12) employee1.name == employee2.name: false
+13) employee1.department == employee2.department: false
+</code></pre><p>我们来分析一下。<code>Employee</code> 类实现了 <code>Cloneable</code> 接口，他有两个属性：<code>name</code> 和 <code>department</code>。其中 <code>name</code> 是字符串类型，是以一个不可变的值存储在内存中；从 <code>&lt;1&gt;</code> 的输出中可以看到，<code>department</code> 存储的是一个内存地址，这个内存地址指向了一个实例化的 <code>Department</code> 对象。</p>
+<p><code>Employee</code> 类实现的 <code>clone()</code> 方法中只是调用了 <code>super.clone()</code>，即 <code>Object.clone()</code>。</p>
+<p>从输出的第 3 行可以看出，<code>employee2</code> 作为 <code>employee1</code> 的复制品，是存储在内存中另一块区域里的一个实例化对象。从输出的第 4 行和第 5 行看出，<code>employee2</code> 和 <code>employee1</code> 的 <code>name</code> 属性是同一个值，<code>department</code> 属性是同一个内存区域：</p>
+<p><span class="image-container"><span class="link"><img class="img" src="clone1.png"
+        alt="clone1"/></span></span></p>
+<p>从 <code>&lt;2&gt;</code> 的输出看出，<code>employee1</code> 修改了 <code>department</code> 属性指向的对象的 <code>name</code> 属性，这并没有修改这个内存地址，所以输出的第 6, 7, 8 行显示了 <code>employee1</code> 和 <code>employee2</code> 的 <code>department</code> 属性仍是相同的。也就是说，某个对象有一个属性是引用类型，对这个对象浅拷贝后得到了他的复制品，那么在这个属性上所做的修改，不论是在原本对象还是复制品中，都会对另一方产生影响。</p>
+<p>之后，我们给 <code>employee1</code> 设置了新的 <code>name</code> 和 <code>department</code> 属性，此时他的 <code>name</code> 属性是内存中存储的另一个字符串常量，<code>department</code> 属性是另一个实例化的 <code>Department</code> 对象的内存地址：</p>
+<p><span class="image-container"><span class="link"><img class="img" src="clone2.png"
+        alt="clone2"/></span></span></p>
+<p>可以看出，此时 <code>employee1</code> 和 <code>employee2</code> 已经没有任何相同之处。</p>
+<h2 id="深拷贝">深拷贝</h2>
+<p>深拷贝其实就是对于引用类型的属性做拷贝时，创建一个新的对象，而非复制内存地址。</p>
+<p>我们只需修改 <code>clone()</code> 方法，让他对这个引用类型的属性创建一个新对象即可：</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 其余代码不变，这里省略
+</span><span class="c1"></span><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="n">Object</span> <span class="nf">clone</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">Department</span> <span class="n">department</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Department</span><span class="o">(</span><span class="n">getDepartment</span><span class="o">().</span><span class="na">getName</span><span class="o">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">Employee</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">department</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div><p>看一下输出：</p>
+<pre><code>1) employee1: name: Alice, department: me.jeff.Department@1b6d3586, DepartmentA
+2) employee2: name: Alice, department: me.jeff.Department@4554617c, DepartmentA
+</code></pre><p>这里只显示了输出的前两行，通过这两行已经可以看出，<code>employee1</code> 和 <code>employee2</code> 的 <code>department</code> 属性存储的内存地址指向的是两个不同的 <code>Department</code> 实例化对象。</p>
+<p>由于需要对对象的所有引用类型属性都要去实例化对应的对象，所以深拷贝的执行速度和开销比浅拷贝要大。</p>
+<p><strong>序列化拷贝</strong>也是深拷贝的一种，他会将一个可序列化（实现 <code>Serializable</code> 接口）对象写入到一个持久化文件中，在拷贝时再读取出来，创建新的对象。当然，对于对象中的引用类型，也会去创建新的对象。</p>
+<h2 id="延迟拷贝">延迟拷贝</h2>
+<p>延迟拷贝其实是深拷贝和浅拷贝的结合。它是这样工作的：拷贝一个对象时，会使用速度较快的浅拷贝，并且用一个计数器来记录有多少个对象共享每个属性。当修改属性时，通过检查计数器来决定是否需要深拷贝。延迟拷贝利用了浅拷贝的速度，并在必要时进行深拷贝。但是计数器会存在一些问题，比如效率会下降，会有循环引用的问题。</p>
+<p>还有需要注意的是，数组、集合中的拷贝默认都是浅拷贝。</p>
+</article><section class="article labels"><a class="category" href=/categories/java/>Java</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/java/basic/generics/"><span class="iconfont icon-article"></span>Java Generics</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>
