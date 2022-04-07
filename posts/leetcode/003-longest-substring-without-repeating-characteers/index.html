@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.82.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>LeetCode - 002.无重复字符的最长子串&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4bcb6f9f298d758a08f497bd63bbb01d412ec22761b87bd901a8165397f9b9f96b165b7e399ffed8eb58801109781944.css" integrity="sha384-S8tvnymNdYoI9Je9Y7uwHUEuwidhuHvZAagWU5f5uflrFlt&#43;OZ/&#43;2OtYgBEJeBlE"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="LeetCode - 002.无重复字符的最长子串" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">LeetCode - 002.无重复字符的最长子串</h1><p class="article date">2022-04-07</p></section><article class="article markdown-body"><h2 id="题目">题目</h2>
+<p>来源：<a href="https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/"target="_blank" rel="noopener noreferrer">002.无重复字符的最长子串</a>
+</p>
+<p>给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串 的长度。</p>
+<p><strong>示例1</strong></p>
+<pre><code>输入: s = &quot;abcabcbb&quot;
+输出: 3 
+解释: 因为无重复字符的最长子串是 &quot;abc&quot;，所以其长度为 3。
+</code></pre><p><strong>示例2</strong></p>
+<pre><code>输入: s = &quot;bbbbb&quot;
+输出: 1
+解释: 因为无重复字符的最长子串是 &quot;b&quot;，所以其长度为 1。
+</code></pre><p><strong>示例3</strong></p>
+<pre><code>输入: s = &quot;pwwkew&quot;
+输出: 3
+解释: 因为无重复字符的最长子串是 &quot;wke&quot;，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，&quot;pwke&quot; 是一个子序列，不是子串。
+</code></pre><p><strong>提示</strong></p>
+<ul>
+<li>0 &lt;= s.length &lt;= 5 * 10<!-- raw HTML omitted -->4</li>
+<li>s 由英文字母、数字、符号和空格组成</li>
+</ul>
+<h2 id="分析">分析</h2>
+<p>我们想象一下，对于一个字符串，比如示例1中的 <code>abcabcbb</code>，从他的起始位置开始，也就是字符 <code>a</code>，向右遍历。遍历至第二个位置，也就是字符 <code>b</code> 时，他和他前面的字符 <code>a</code> 构成的这个子串 <code>ab</code>，是不含有重复字符的。假设有一个容器，我们把这两个字符构成的子串放在这个容器里，接着继续遍历。至第三个字符 <code>c</code> 时，我们的这个容器里不含有和 <code>c</code> 重复的字符，所以把字符 <code>c</code> 放入这个容器，此时容器里就是由 <code>a</code>, <code>b</code>, <code>c</code> 这三个字符构成的子串。</p>
+<p>继续遍历至第四个字符 <code>a</code>，我们发现容器里包含了字符 <code>a</code>，那么当前容器里的子串就是<strong>目前</strong>的最长子串。显然我们不能停在这里，也许后面的字符里会出现更长的无重复字符子串。可以看出来，如果去掉容器里重复的字符 <code>a</code>，剩余的字符 <code>b</code>, <code>c</code> 和当前的字符 <code>a</code> 构成了一个新的无重复字符的子串。</p>
+<p>再向后遍历，第五个字符 <code>b</code> 已经在容器中了，跟上述的情况一样，我们可以判断当前容器里的最长子串和之前的最长子串哪一个更长。接着去除容器中重复字符和他之前的字符，并把新的字符放入容器中，构成新的子串。继续遍历。</p>
+<p>总结一下，我们有一个容器，每遇到一个新的字符，判断容器中是否存在这个字符，如果存在，就把这个字符及其之前的字符从容器中去除，并放入这个新的字符，直至遍历结束。可以看出，这个容器的长度始终在变化，他的右侧不断放入新的字符，在遇到重复字符时，将其中的重复字符及其左侧的字符去除，同时这个容器也在不断的右移，这样的容器就是一个<strong>滑动窗口</strong>。</p>
+<h2 id="解答">解答</h2>
+<div class="highlight"><pre class="chroma"><code class="language-rust" data-lang="rust"><span class="k">impl</span><span class="w"> </span><span class="n">Solution</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="k">fn</span> <span class="nf">length_of_longest_substring</span><span class="p">(</span><span class="n">s</span>: <span class="nb">String</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">i32</span> <span class="p">{</span><span class="w">
+</span><span class="w">		</span><span class="c1">// 记录最长子串的长度
+</span><span class="c1"></span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span><span class="w">		</span><span class="c1">// 上文中的容器
+</span><span class="c1"></span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span>::<span class="n">collections</span>::<span class="n">HashSet</span>::<span class="n">new</span><span class="p">();</span><span class="w">
+</span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">s_chars</span>: <span class="nb">Vec</span><span class="o">&lt;</span><span class="n">_</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">chars</span><span class="p">().</span><span class="n">collect</span><span class="p">();</span><span class="w">
+</span><span class="w">
+</span><span class="w">		</span><span class="c1">// 容器左右两侧的索引位置
+</span><span class="c1"></span><span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="k">mut</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">right</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span><span class="w">
+</span><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">s_chars</span><span class="p">.</span><span class="n">len</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s_chars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">right</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span><span class="w">
+</span><span class="w">			</span><span class="c1">// 判断当前字符是否在容器中
+</span><span class="c1"></span><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="n">set</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">                </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span>::<span class="n">cmp</span>::<span class="n">max</span><span class="p">(</span><span class="n">max</span><span class="p">,</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">left</span><span class="p">);</span><span class="w">
+</span><span class="w">				</span><span class="c1">// 去除容器中重复字符及其左侧的字符
+</span><span class="c1"></span><span class="w">                </span><span class="k">while</span><span class="w"> </span><span class="n">s_chars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">left</span><span class="p">).</span><span class="n">unwrap</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">                    </span><span class="n">set</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s_chars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">left</span><span class="p">).</span><span class="n">unwrap</span><span class="p">());</span><span class="w">
+</span><span class="w">                    </span><span class="n">left</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w">                </span><span class="p">}</span><span class="w">
+</span><span class="w">                </span><span class="n">set</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s_chars</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="n">left</span><span class="p">).</span><span class="n">unwrap</span><span class="p">());</span><span class="w">
+</span><span class="w">                </span><span class="n">left</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w">            </span><span class="p">}</span><span class="w">
+</span><span class="w">			</span><span class="c1">// 将新的字符放入容器中
+</span><span class="c1"></span><span class="w">            </span><span class="n">set</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">ch</span><span class="p">);</span><span class="w">
+</span><span class="w">            </span><span class="n">right</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w">        </span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="w">        </span><span class="n">std</span>::<span class="n">cmp</span>::<span class="n">max</span><span class="p">(</span><span class="n">max</span><span class="p">,</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">left</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">i32</span><span class="w">
+</span><span class="w">    </span><span class="p">}</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span></code></pre></div></article><section class="article labels"><a class="category" href=/categories/leetcode/>LeetCode</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/leetcode/binary-search-tree/"><span class="iconfont icon-article"></span>二叉查找树</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.72e76ccf211868d08e31d7ca45c02501991bd760f28809c52045fa79fb7b7428664bb54ae875b46031ebc760c77b9562.js" integrity="sha384-cudszyEYaNCOMdfKRcAlAZkb12DyiAnFIEX6eft7dChmS7VK6HW0YDHrx2DHe5Vi"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>
