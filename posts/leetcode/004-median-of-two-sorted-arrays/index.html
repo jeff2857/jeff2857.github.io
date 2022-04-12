@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.68.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>LeetCode - 004.寻找两个正序数组的中位数&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.80d8c2be6c74bb9279be2e6bfd6a59e82ee1f4cdf0eddd6d3ea72d90bd516ab96fc815f3906482f8c3ba791a27d90836.css" integrity="sha384-gNjCvmx0u5J5vi5r/WpZ6C7h9M3w7d1tPqctkL1RarlvyBXzkGSC&#43;MO6eRon2Qg2"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="LeetCode - 004.寻找两个正序数组的中位数" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">LeetCode - 004.寻找两个正序数组的中位数</h1><p class="article date">2022-04-12</p></section><article class="article markdown-body"><h2 id="题目">题目</h2>
+<p>来源：<a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/"target="_blank" rel="noopener noreferrer">004.寻找两个正序数组的中位数</a>
+</p>
+<p>给定两个大小分别为 <code>m</code> 和 <code>n</code> 的正序（从小到大）数组 <code>nums1</code> 和 <code>nums2</code>。请你找出并返回这两个正序数组的 <strong>中位数</strong>。</p>
+<p>算法的时间复杂度应该为 <code>O(log(m+n))</code>。</p>
+<p>难度：困难</p>
+<p><strong>示例1</strong></p>
+<pre><code>输入：nums1 = [1, 3], nums2 = [2]
+输出：2.00000
+解释：合并数组 = [1, 2, 3]，中位数 2
+</code></pre><p><strong>示例2</strong></p>
+<pre><code>输入：nums1 = [1, 2], nums2 = [3, 4]
+输出：2.50000
+解释：合并数组 = [1, 2, 3, 4]，中位数 (2 + 3) / 2 = 2.5
+</code></pre><p><strong>提示</strong></p>
+<ul>
+<li><code>nums1.length == m</code></li>
+<li><code>nums2.length == n</code></li>
+<li><code>0 &lt;= m &lt;= 1000</code></li>
+<li><code>0 &lt;= n &lt;= 1000</code></li>
+<li><code>1 &lt;= m + n &lt;= 2000</code></li>
+<li><code>-10^6 &lt;= nums1[i], nums2[i] &lt;= 10^6</code></li>
+</ul>
+<h2 id="分析">分析</h2>
+<p>乍一看，寻找两个正序数组的中位数，一种方法是遍历两个数组，将每个元素按正序放入一个新的大数组中，然后返回中间位置的值即可，时间复杂度为 <code>O(m+n)</code>，空间复杂度为 <code>O(m+n)</code>。</p>
+<p>或者是将两个数组合并后再排序，合并数组的时间复杂度为 <code>O(m+n)</code>，排序过程如果用快速排序的话平均时间复杂度为 <code>O((m+n)log(m+n))</code>。</p>
+<p>这种方法虽然简单，但是无法满足题目要求的 <code>O(log(m+n))</code> 的时间复杂度。</p>
+<p>我们想一想，两个数组 <code>A</code> 和 <code>B</code> 的中位数，就是他们合并后那个大数组中间位置的数，而且这个大数组是正序的，那么我们可以把问题转化为寻找这个大数组中第 <code>k</code> 位置的数。</p>
+<p>如果大数组的长度为奇数，则 <code>k = (m + n) / 2</code>，中位数就是位置为 <code>k</code> 的数；如果长度是偶数，<code>k = (m + n) / 2</code>，中位数是位置为 <code>k</code> 和 <code>k + 1</code> 两个数的平均值。</p>
+<p>题目要求时间复杂度为 <code>O(log(m+n))</code>，很像是二分查找的时间复杂度，我们就从这个角度来考虑。</p>
+<p>对于这个大数组来说，位置 <code>k = (m + n) / 2</code> 将他分割为左右两部分，左侧元素的数量为 <code>k</code> 个，这 <code>k</code> 个元素必然一部分在数组 <code>A</code> 中，一部分在数组 <code>B</code> 中。假设各占一半，那么就有 <code>k/2</code> 个元素在 <code>A</code> 中，<code>k/2</code> 个元素在 <code>B</code> 中。</p>
+<p>我们来比较 <code>A</code>, <code>B</code> 两个数组中这 <code>k/2</code> 个元素中最大的值，也就是位于 <code>k/2 - 1</code> 这个位置的值。</p>
+<p>如果 <code>A[k/2 - 1] &lt; B[k/2 - 1]</code>，那么说明在数组 <code>A</code> 中，他的位置 <code>0</code> 到 <code>k/2 - 1</code> 的这些元素，在大数组中都位于中位数的左侧。想象一下，如果在大数组中去除掉这些元素，那么<strong>寻找第 <code>k</code> 大的元素</strong>这个问题就变成了<strong>寻找第 <code>k - k/2</code> 的元素</strong>。</p>
+<p>好，去除这些元素后，数组 <code>A</code> 变成了他的 <code>k/2 - 1</code> 位置右侧所有元素的子数组，<code>k</code> 变成了 <code>k - k/2</code>，我们要做的就是在这个子数组和数组 <code>B</code> 中，继续寻找第 <code>k</code> 大的元素。</p>
+<p>这样每次 <code>k</code> 都会变成他的一半大小，直到最终变成寻找第 <code>0</code> 大或第 <code>1</code> 大的元素，这个时候就很方便的找到了。这样看起来符合题目要求的 <code>O(log(m+n))</code> 的时间复杂度，我们写代码来实现一下。</p>
+<h2 id="解答">解答</h2>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">double</span> <span class="nf">findMedianSortedArrays</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 奇数，找第 k 个数；偶数，找第 k 个数和第 k+1 个数，计算平均值
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="o">(</span><span class="n">nums1</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">nums2</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+        <span class="kt">boolean</span> <span class="n">isEven</span> <span class="o">=</span> <span class="o">(</span><span class="n">nums1</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">nums2</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">%</span> <span class="n">2</span> <span class="o">==</span> <span class="n">0</span><span class="o">;</span>
+
+        <span class="kt">int</span> <span class="n">offset1</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="c1">// 数组 nums1 去除元素后的偏移量
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">offset2</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="c1">// 数组 nums2 去除元素后的偏移量
+</span><span class="c1"></span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">k</span> <span class="o">&gt;</span> <span class="n">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 比较 k/2 - 1 位置的元素
+</span><span class="c1"></span>            <span class="kt">int</span> <span class="n">curIdx</span> <span class="o">=</span> <span class="n">k</span> <span class="o">/</span> <span class="n">2</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">curIdx</span> <span class="o">+</span> <span class="n">offset1</span> <span class="o">&gt;=</span> <span class="n">nums1</span><span class="o">.</span><span class="na">length</span> <span class="o">||</span> <span class="n">curIdx</span> <span class="o">+</span> <span class="n">offset2</span> <span class="o">&gt;=</span> <span class="n">nums2</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 超出其中一个数组的边界
+</span><span class="c1"></span>                <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1Remain</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">offset1</span><span class="o">,</span> <span class="n">nums1</span><span class="o">.</span><span class="na">length</span><span class="o">);</span> <span class="c1">// nums1 去除部分元素后的子数组
+</span><span class="c1"></span>                <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2Remain</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">nums2</span><span class="o">,</span> <span class="n">offset2</span><span class="o">,</span> <span class="n">nums2</span><span class="o">.</span><span class="na">length</span><span class="o">);</span> <span class="c1">// nums2 去除部分元素后的子数组
+</span><span class="c1"></span>                <span class="k">return</span> <span class="n">isEven</span> <span class="o">?</span> <span class="o">(</span><span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1Remain</span><span class="o">,</span> <span class="n">nums2Remain</span><span class="o">,</span> <span class="n">k</span> <span class="o">-</span> <span class="n">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1Remain</span><span class="o">,</span> <span class="n">nums2Remain</span><span class="o">,</span> <span class="n">k</span><span class="o">))</span> <span class="o">/</span> <span class="n">2</span><span class="o">.</span><span class="na">0</span> <span class="o">:</span> <span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1Remain</span><span class="o">,</span> <span class="n">nums2Remain</span><span class="o">,</span> <span class="n">k</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">nums1</span><span class="o">[</span><span class="n">curIdx</span> <span class="o">+</span> <span class="n">offset1</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">nums2</span><span class="o">[</span><span class="n">curIdx</span> <span class="o">+</span> <span class="n">offset2</span><span class="o">])</span> <span class="o">{</span>
+                <span class="n">offset1</span> <span class="o">+=</span> <span class="n">curIdx</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span> <span class="c1">// 增加 nums1 的偏移量，相当于去除了该位置左侧的元素
+</span><span class="c1"></span>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">offset2</span> <span class="o">+=</span> <span class="n">curIdx</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span> <span class="c1">// 增加 nums2 的偏移量，相当于去除了该位置左侧的元素
+</span><span class="c1"></span>            <span class="o">}</span>
+            <span class="n">k</span> <span class="o">-=</span> <span class="n">curIdx</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span> <span class="c1">// 问题由 寻找第 k 大的值 转为 寻找第 k - k/2 大的元素
+</span><span class="c1"></span>        <span class="o">}</span>
+
+        <span class="c1">// 此时中位数左侧的数基本已去除完毕，k = 0 或 k = 1，相当于寻找第 0 大或第 1 大的元素
+</span><span class="c1"></span>        <span class="c1">// 如果大数组长度为偶数，在找到第 k 大的元素后，还需要找到第 k + 1 大的元素，计算二者的平均值
+</span><span class="c1"></span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1Remain</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">offset1</span><span class="o">,</span> <span class="n">nums1</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2Remain</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">nums2</span><span class="o">,</span> <span class="n">offset2</span><span class="o">,</span> <span class="n">nums2</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">isEven</span> <span class="o">?</span> <span class="o">(</span><span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1Remain</span><span class="o">,</span> <span class="n">nums2Remain</span><span class="o">,</span> <span class="n">k</span> <span class="o">-</span> <span class="n">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1Remain</span><span class="o">,</span> <span class="n">nums2Remain</span><span class="o">,</span> <span class="n">k</span><span class="o">))</span> <span class="o">/</span> <span class="n">2</span><span class="o">.</span><span class="na">0</span> <span class="o">:</span> <span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1Remain</span><span class="o">,</span> <span class="n">nums2Remain</span><span class="o">,</span> <span class="n">k</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+</span><span class="cm">     * 辅助函数，寻找两个数组中第 k 大的元素
+</span><span class="cm">     * @param nums1 数组1
+</span><span class="cm">     * @param nums2 数组2
+</span><span class="cm">     * @param k 第 k 大
+</span><span class="cm">     * @return 找到的元素值
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">findKthElem</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">nums1</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">nums2</span><span class="o">[</span><span class="n">k</span><span class="o">];</span> <span class="c1">// 若 nums1 为空，则第 k 大的数就是 nums2 中位置为 k 的元素
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">nums2</span><span class="o">.</span><span class="na">length</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">nums1</span><span class="o">[</span><span class="n">k</span><span class="o">];</span> <span class="c1">// 若 nums2 为空，则第 k 大的数就是 nums1 中位置为 k 的元素
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">nums1</span><span class="o">[</span><span class="n">0</span><span class="o">],</span> <span class="n">nums2</span><span class="o">[</span><span class="n">0</span><span class="o">]);</span> <span class="c1">// 第 0 大的数，返回两个数组中的最小值
+</span><span class="c1"></span>        <span class="c1">// 去除两个数组中最小的元素后，相当于寻找第 k - 1 大的元素
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">nums1</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">&lt;</span> <span class="n">nums2</span><span class="o">[</span><span class="n">0</span><span class="o">])</span> <span class="k">return</span> <span class="n">findKthElem</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">nums1</span><span class="o">.</span><span class="na">length</span><span class="o">),</span> <span class="n">nums2</span><span class="o">,</span> <span class="n">k</span> <span class="o">-</span> <span class="n">1</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">findKthElem</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">copyOfRange</span><span class="o">(</span><span class="n">nums2</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">nums2</span><span class="o">.</span><span class="na">length</span><span class="o">),</span> <span class="n">k</span> <span class="o">-</span> <span class="n">1</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test1</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span> <span class="o">=</span> <span class="o">{</span><span class="n">1</span><span class="o">,</span> <span class="n">3</span><span class="o">};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span> <span class="o">=</span> <span class="o">{</span><span class="n">2</span><span class="o">};</span>
+
+        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">findMedianSortedArrays</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">nums2</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">2</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test2</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span> <span class="o">=</span> <span class="o">{</span><span class="n">1</span><span class="o">,</span> <span class="n">2</span><span class="o">};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span> <span class="o">=</span> <span class="o">{</span><span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">};</span>
+
+        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">findMedianSortedArrays</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">nums2</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">2</span><span class="o">.</span><span class="na">5</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test3</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span> <span class="o">=</span> <span class="o">{</span><span class="n">1</span><span class="o">,</span> <span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">,</span> <span class="n">9</span><span class="o">};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span> <span class="o">=</span> <span class="o">{</span><span class="n">1</span><span class="o">,</span> <span class="n">2</span><span class="o">,</span> <span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">,</span> <span class="n">5</span><span class="o">,</span> <span class="n">6</span><span class="o">,</span> <span class="n">7</span><span class="o">,</span> <span class="n">8</span><span class="o">,</span> <span class="n">9</span><span class="o">};</span>
+
+        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">findMedianSortedArrays</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">nums2</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">4</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test4</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span> <span class="o">=</span> <span class="o">{</span><span class="n">1</span><span class="o">};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span> <span class="o">=</span> <span class="o">{</span><span class="n">2</span><span class="o">,</span> <span class="n">3</span><span class="o">,</span> <span class="n">4</span><span class="o">,</span> <span class="n">5</span><span class="o">,</span> <span class="n">6</span><span class="o">,</span> <span class="n">7</span><span class="o">,</span> <span class="n">8</span><span class="o">};</span>
+
+        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">findMedianSortedArrays</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">nums2</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">4</span><span class="o">.</span><span class="na">5</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test5</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums1</span> <span class="o">=</span> <span class="o">{};</span>
+        <span class="kt">int</span><span class="o">[]</span> <span class="n">nums2</span> <span class="o">=</span> <span class="o">{</span><span class="n">1</span><span class="o">,</span> <span class="n">2</span><span class="o">};</span>
+
+        <span class="kt">double</span> <span class="n">result</span> <span class="o">=</span> <span class="n">findMedianSortedArrays</span><span class="o">(</span><span class="n">nums1</span><span class="o">,</span> <span class="n">nums2</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">1</span><span class="o">.</span><span class="na">5</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Solution</span> <span class="n">solution</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Solution</span><span class="o">();</span>
+
+        <span class="n">solution</span><span class="o">.</span><span class="na">test1</span><span class="o">();</span>
+        <span class="n">solution</span><span class="o">.</span><span class="na">test2</span><span class="o">();</span>
+        <span class="n">solution</span><span class="o">.</span><span class="na">test3</span><span class="o">();</span>
+        <span class="n">solution</span><span class="o">.</span><span class="na">test4</span><span class="o">();</span>
+        <span class="n">solution</span><span class="o">.</span><span class="na">test5</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>上述代码中还加入了几个测试用例。</p>
+<p>个人而言，这种解法很难想明白 :P，我也是看了题解后思考很久才搞懂并写代码实现出来，哈哈。</p>
+</article><section class="article labels"><a class="category" href=/categories/leetcode/>LeetCode</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/leetcode/003-longest-substring-without-repeating-characteers/"><span class="iconfont icon-article"></span>LeetCode - 003.无重复字符的最长子串</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.0799348a91dce12c6be4a73f943cfe78f181f4e6f6ec35c4af0fca1de377879f77cfab03c30f03a174d675737b5a9314.js" integrity="sha384-B5k0ipHc4Sxr5Kc/lDz&#43;ePGB9Ob27DXErw/KHeN3h593z6sDww8DoXTWdXN7WpMU"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>
