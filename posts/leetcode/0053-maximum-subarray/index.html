@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.68.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>LeetCode - 0053.最大子数组和&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.80d8c2be6c74bb9279be2e6bfd6a59e82ee1f4cdf0eddd6d3ea72d90bd516ab96fc815f3906482f8c3ba791a27d90836.css" integrity="sha384-gNjCvmx0u5J5vi5r/WpZ6C7h9M3w7d1tPqctkL1RarlvyBXzkGSC&#43;MO6eRon2Qg2"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="LeetCode - 0053.最大子数组和" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">LeetCode - 0053.最大子数组和</h1><p class="article date">2022-04-25</p></section><article class="article markdown-body"><h2 id="题目">题目</h2>
+<p>来源：<a href="https://leetcode-cn.com/problems/maximum-subarray/"target="_blank" rel="noopener noreferrer">0053.最大子数组和</a>
+</p>
+<p>给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。</p>
+<p>子数组 是数组中的一个连续部分。</p>
+<p>难度：简单</p>
+<p><strong>示例1</strong></p>
+<pre><code>输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+</code></pre><p><strong>示例2</strong></p>
+<pre><code>输入：nums = [1]
+输出：1
+</code></pre><p><strong>示例3</strong></p>
+<pre><code>输入：nums = [5,4,-1,7,8]
+输出：23
+</code></pre><p><strong>提示</strong></p>
+<ul>
+<li><code>1 &lt;= nums.length &lt;= 10^5</code></li>
+<li><code>-104 &lt;= nums[i] &lt;= 10^4</code></li>
+</ul>
+<p><strong>进阶</strong>：如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的 分治法 求解。</p>
+<h2 id="分析">分析</h2>
+<p>我们从最简单的情况看起，对于只有一个元素的数组，其具有最大和的连续子数组就是这个元素构成的数组，最大和就是这个元素的值。</p>
+<p>我们用 <code>max</code> 表示所求的最大和，用 <code>sum</code> 表示当前子数组的和。</p>
+<p>对于有两个元素的数组，我们这样来看：</p>
+<p>由第一个元素构成的子数组，最大和我们已经知道了（<code>max = sum = nums[0]</code>），就是这个元素的值；那么将第二个元素放入这个子数组中之后呢，要计算此时的最大和，就有两种情况。</p>
+<p>如果第二个元素为正，显然当前子数组的和 <code>sum + nums[1] &gt; sum</code>，若 <code>sum &gt; 0</code>，则具有最大和的连续子数组为 <code>[nums[0], nums[1]]</code>，最大和为 <code>sum + nums[1]</code>；
+若 <code>sum &lt;= 0</code>，则具有最大和的连续子数组为 <code>[nums[1]]</code>，最大和为 <code>max = nums[1]</code>;</p>
+<p>如果第二个元素为负，当前子数组的和 <code>sum + nums[i] &lt; nums[1]</code>，那么具有最大和的子数组为 <code>[nums[0]]</code>，最大和为 <code>sum</code>。</p>
+<p>综合这两种情况，我们可以看出，无论第二个元素为正或负，当前子数组的最大和为 <code>sum = Math.max(sum + nums[1], nums[1])</code>，所求的最大和为 <code>max = Math.max(sum, max)</code>。</p>
+<p>这是长度为 2 的数组的情况，扩展到长度为 n 的数组，他的前 2 个元素构成的子数组，我们可以通过上述方法得到结果；对于他的位置为 <code>[0, i]</code> 的元素构成的子数组，<code>sum = Math.max(sum + nums[i], nums[i])</code>, <code>max = Math.max(sum ,max)</code>。</p>
+<p>这种方法用了 <strong>动态规划</strong> 的思想，假设我们用 <code>dp[i]</code> 表示由位置 <code>[0, i]</code> 的元素构成的数组中，具有最大和的连续子数组，他的最大和。那么</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="n">sum</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+<span class="n">dp</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">dp</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">1</span><span class="o">]);</span>
+</code></pre></div><h2 id="解答">解答</h2>
+<p>由于我们求解的就是这个长度为 <code>n</code> 的数组所满足的 <code>dp[n - 1]</code>，遍历完后返回 <code>dp[n - 1]</code> 的值即可，无需再创建一个长度为 <code>n</code> 的 <code>dp</code> 数组。</p>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">maxSubArray</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">nums</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">max</span> <span class="o">=</span> <span class="n">nums</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">num</span> <span class="o">:</span> <span class="n">nums</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">sum</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">sum</span> <span class="o">+</span> <span class="n">num</span><span class="o">,</span> <span class="n">num</span><span class="o">);</span>
+            <span class="n">max</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">max</span><span class="o">,</span> <span class="n">sum</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">max</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>至于题目所说的 分治法，我看了一眼题解，感觉很复杂，代码也比较长，就没有去研究。</p>
+</article><section class="article labels"><a class="category" href=/categories/leetcode/>LeetCode</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/leetcode/004-median-of-two-sorted-arrays/"><span class="iconfont icon-article"></span>LeetCode - 004.寻找两个正序数组的中位数</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.0799348a91dce12c6be4a73f943cfe78f181f4e6f6ec35c4af0fca1de377879f77cfab03c30f03a174d675737b5a9314.js" integrity="sha384-B5k0ipHc4Sxr5Kc/lDz&#43;ePGB9Ob27DXErw/KHeN3h593z6sDww8DoXTWdXN7WpMU"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>

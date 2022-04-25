@@ -5,10 +5,70 @@
     <description>Recent content in LeetCode on Jeff&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Apr 2022 15:54:12 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 25 Apr 2022 17:27:30 +0800</lastBuildDate>
     
         <atom:link href="https://jeff2857.github.io/categories/leetcode/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>LeetCode - 0053.最大子数组和</title>
+      <link>https://jeff2857.github.io/posts/leetcode/0053-maximum-subarray/</link>
+      <pubDate>Mon, 25 Apr 2022 17:27:30 +0800</pubDate>
+      
+      <guid>https://jeff2857.github.io/posts/leetcode/0053-maximum-subarray/</guid>
+      <description>&lt;h2 id=&#34;题目&#34;&gt;题目&lt;/h2&gt;
+&lt;p&gt;来源：&lt;a href=&#34;https://leetcode-cn.com/problems/maximum-subarray/&#34;target=&#34;_blank&#34; rel=&#34;noopener noreferrer&#34;&gt;0053.最大子数组和&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。&lt;/p&gt;
+&lt;p&gt;子数组 是数组中的一个连续部分。&lt;/p&gt;
+&lt;p&gt;难度：简单&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例1&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;示例2&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;输入：nums = [1]
+输出：1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;示例3&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;输入：nums = [5,4,-1,7,8]
+输出：23
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;提示&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;1 &amp;lt;= nums.length &amp;lt;= 10^5&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-104 &amp;lt;= nums[i] &amp;lt;= 10^4&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;进阶&lt;/strong&gt;：如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的 分治法 求解。&lt;/p&gt;
+&lt;h2 id=&#34;分析&#34;&gt;分析&lt;/h2&gt;
+&lt;p&gt;我们从最简单的情况看起，对于只有一个元素的数组，其具有最大和的连续子数组就是这个元素构成的数组，最大和就是这个元素的值。&lt;/p&gt;
+&lt;p&gt;我们用 &lt;code&gt;max&lt;/code&gt; 表示所求的最大和，用 &lt;code&gt;sum&lt;/code&gt; 表示当前子数组的和。&lt;/p&gt;
+&lt;p&gt;对于有两个元素的数组，我们这样来看：&lt;/p&gt;
+&lt;p&gt;由第一个元素构成的子数组，最大和我们已经知道了（&lt;code&gt;max = sum = nums[0]&lt;/code&gt;），就是这个元素的值；那么将第二个元素放入这个子数组中之后呢，要计算此时的最大和，就有两种情况。&lt;/p&gt;
+&lt;p&gt;如果第二个元素为正，显然当前子数组的和 &lt;code&gt;sum + nums[1] &amp;gt; sum&lt;/code&gt;，若 &lt;code&gt;sum &amp;gt; 0&lt;/code&gt;，则具有最大和的连续子数组为 &lt;code&gt;[nums[0], nums[1]]&lt;/code&gt;，最大和为 &lt;code&gt;sum + nums[1]&lt;/code&gt;；
+若 &lt;code&gt;sum &amp;lt;= 0&lt;/code&gt;，则具有最大和的连续子数组为 &lt;code&gt;[nums[1]]&lt;/code&gt;，最大和为 &lt;code&gt;max = nums[1]&lt;/code&gt;;&lt;/p&gt;
+&lt;p&gt;如果第二个元素为负，当前子数组的和 &lt;code&gt;sum + nums[i] &amp;lt; nums[1]&lt;/code&gt;，那么具有最大和的子数组为 &lt;code&gt;[nums[0]]&lt;/code&gt;，最大和为 &lt;code&gt;sum&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;综合这两种情况，我们可以看出，无论第二个元素为正或负，当前子数组的最大和为 &lt;code&gt;sum = Math.max(sum + nums[1], nums[1])&lt;/code&gt;，所求的最大和为 &lt;code&gt;max = Math.max(sum, max)&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这是长度为 2 的数组的情况，扩展到长度为 n 的数组，他的前 2 个元素构成的子数组，我们可以通过上述方法得到结果；对于他的位置为 &lt;code&gt;[0, i]&lt;/code&gt; 的元素构成的子数组，&lt;code&gt;sum = Math.max(sum + nums[i], nums[i])&lt;/code&gt;, &lt;code&gt;max = Math.max(sum ,max)&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这种方法用了 &lt;strong&gt;动态规划&lt;/strong&gt; 的思想，假设我们用 &lt;code&gt;dp[i]&lt;/code&gt; 表示由位置 &lt;code&gt;[0, i]&lt;/code&gt; 的元素构成的数组中，具有最大和的连续子数组，他的最大和。那么&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Math&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]);&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;dp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Math&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;解答&#34;&gt;解答&lt;/h2&gt;
+&lt;p&gt;由于我们求解的就是这个长度为 &lt;code&gt;n&lt;/code&gt; 的数组所满足的 &lt;code&gt;dp[n - 1]&lt;/code&gt;，遍历完后返回 &lt;code&gt;dp[n - 1]&lt;/code&gt; 的值即可，无需再创建一个长度为 &lt;code&gt;n&lt;/code&gt; 的 &lt;code&gt;dp&lt;/code&gt; 数组。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;Solution&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;maxSubArray&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;max&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;];&lt;/span&gt;
+        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
+
+        &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;num&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nums&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Math&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;num&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;num&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;max&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Math&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+
+        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;至于题目所说的 分治法，我看了一眼题解，感觉很复杂，代码也比较长，就没有去研究。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>LeetCode - 004.寻找两个正序数组的中位数</title>
@@ -919,25 +979,6 @@ brew install mit-scheme
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;将光标移至该行末尾，按下 &lt;code&gt;Ctrl-x Ctrl-e&lt;/code&gt; 即可执行改行代码，执行结果在界面的最下方显示
 &lt;code&gt;Ctrl-x Ctrl-c&lt;/code&gt; 关闭 &lt;code&gt;emacs&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;关于 &lt;code&gt;emacs&lt;/code&gt;，我也是正在学习中&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>配置SSH快捷连接</title>
-      <link>https://jeff2857.github.io/posts/terminal/ssh-shortcut/</link>
-      <pubDate>Fri, 09 Apr 2021 14:04:12 +0800</pubDate>
-      
-      <guid>https://jeff2857.github.io/posts/terminal/ssh-shortcut/</guid>
-      <description>&lt;p&gt;在 &lt;code&gt;~/.ssh&lt;/code&gt; 目录下有个 &lt;code&gt;config&lt;/code&gt; 文件，修改该文件添加主机配置：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Host *
-    ServerAliveInterval 60
-
-Host 47
-    HostName 47.114.62.251
-    User root
-    Port 22
-    IdentityFile ~/.ssh/id_rsa
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;即可通过命令 &lt;code&gt;ssh 47&lt;/code&gt; 连接至服务器&lt;/p&gt;
 </description>
     </item>
     
