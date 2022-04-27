@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.68.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark"><title>LeetCode - 0118.杨辉三角 & 0119.杨辉三角II&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.80d8c2be6c74bb9279be2e6bfd6a59e82ee1f4cdf0eddd6d3ea72d90bd516ab96fc815f3906482f8c3ba791a27d90836.css" integrity="sha384-gNjCvmx0u5J5vi5r/WpZ6C7h9M3w7d1tPqctkL1RarlvyBXzkGSC&#43;MO6eRon2Qg2"><meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="LeetCode - 0118.杨辉三角 &amp; 0119.杨辉三角II" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
+    <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
+    <h1 class="article title">LeetCode - 0118.杨辉三角 & 0119.杨辉三角II</h1><p class="article date">2022-04-27</p></section><article class="article markdown-body"><p>0118.杨辉三角 和 0119.杨辉三角II 这两个题目都是在解决同一个问题，所以放在一起解答。</p>
+<h2 id="题目1">题目1</h2>
+<p>来源：<a href="https://leetcode-cn.com/problems/pascals-triangle/"target="_blank" rel="noopener noreferrer">0118.杨辉三角</a>
+</p>
+<p>给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。</p>
+<p>在「杨辉三角」中，每个数是它左上方和右上方的数的和。</p>
+<p><span class="image-container"><span class="link"><img class="img" src="pascalTriangle.gif"
+        alt="pascalTriangle"/></span></span></p>
+<p>难度：简单</p>
+<p><strong>示例1</strong></p>
+<pre><code>输入: numRows = 5
+输出: [[1],[1,1],[1,2,1],[1,3,3,1],[1,4,6,4,1]]
+</code></pre><p><strong>示例2</strong></p>
+<pre><code>输入: numRows = 1
+输出: [[1]]
+</code></pre><p><strong>提示</strong></p>
+<ul>
+<li><code>1 &lt;= numRows &lt;= 30</code></li>
+</ul>
+<h2 id="分析">分析</h2>
+<p>从示意图可以很清楚地看出杨辉三角是如何生成的。
+从第三行开始，对于每一行，除去两边都是 <code>1</code> 外，其余元素都是他上一行相邻的元素从左到右依次相加之和。</p>
+<p>我们已知第 1 行和第 2 行作为基本情况，对于第 n 行元素，都可以由第 n - 1 行的元素按上述规律生成，所以很明显，这是一个 <strong>动态规划</strong> 的问题。</p>
+<p>题目要求输出前 <code>numRows</code> 行，我们就从第 <code>0</code> 行开始，按规律依次生成第 <code>i</code> 行，直到第 <code>numRows - 1</code> 行为止即可。</p>
+<h2 id="解答">解答</h2>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span> <span class="nf">generate</span><span class="o">(</span><span class="kt">int</span> <span class="n">numRows</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span> <span class="n">dp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">numRows</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="c1">// 生成当前第 i 行
+</span><span class="c1"></span>            <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">row</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">0</span> <span class="o">||</span> <span class="n">j</span> <span class="o">==</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 每行的左右两侧元素都是 1
+</span><span class="c1"></span>                    <span class="n">row</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="c1">// 拿到上一行对应位置的元素，相加
+</span><span class="c1"></span>                    <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">prevRow</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">1</span><span class="o">);</span>
+                    <span class="n">row</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">prevRow</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">prevRow</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">j</span><span class="o">));</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">dp</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">row</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">dp</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>0119.杨辉三角II 也是一道有关生成杨辉三角的题目，只不过他要求输出第 n 行的元素，而且要求 <code>O(n)</code> 的空间复杂度，我们来看一下。</p>
+<h2 id="题目2">题目2</h2>
+<p>来源：<a href="https://leetcode-cn.com/problems/pascals-triangle-ii/"target="_blank" rel="noopener noreferrer">0119.杨辉三角II</a>
+</p>
+<p>给定一个非负索引 rowIndex，返回「杨辉三角」的第 rowIndex 行。</p>
+<p>在「杨辉三角」中，每个数是它左上方和右上方的数的和。</p>
+<p><span class="image-container"><span class="link"><img class="img" src="pascalTriangle.gif"
+        alt="pascalTriangle"/></span></span></p>
+<p>难度：简单</p>
+<p><strong>示例1</strong></p>
+<pre><code>输入: rowIndex = 3
+输出: [1,3,3,1]
+</code></pre><p><strong>示例2</strong></p>
+<pre><code>输入: rowIndex = 0
+输出: [1]
+</code></pre><p><strong>示例3</strong></p>
+<pre><code>输入: rowIndex = 1
+输出: [1,1]
+</code></pre><p><strong>提示</strong></p>
+<ul>
+<li><code>1 &lt;= numIndex &lt;= 33</code></li>
+</ul>
+<p><strong>进阶</strong></p>
+<p>你可以优化你的算法到 O(rowIndex) 空间复杂度吗？</p>
+<h2 id="分析-1">分析</h2>
+<p>在做 <strong>动态规划</strong> 的题目时，很多时候要求我们输出第 n 种情况，比如斐波那契数列问题要求输出第 n 个元素。</p>
+<p>我们一般会用一个一维或二维数组（视问题而定）来存储动态规划问题计算过程的中间结果。像这种只要求输出第 n 种情况的题目，我们可以想办法把这个存储中间结果的数组省略掉。</p>
+<p>我们只要构造出第 n 种情况即可。解法依旧是从第 0 行开始，生成第 1 行元素，生成第 2 行元素……直到第 n 行。</p>
+<h2 id="解答-1">解答</h2>
+<div class="highlight"><pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="nf">getRow</span><span class="o">(</span><span class="kt">int</span> <span class="n">rowIndex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 最终要输出的这一行，并把他初始化
+</span><span class="c1"></span>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">row</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">rowIndex</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">row</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// i 从 0 到 n，依次生成第 i 行的元素
+</span><span class="c1"></span>        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">rowIndex</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="c1">// prev 用于记录上一行对应位置元素的值
+</span><span class="c1"></span>            <span class="kt">int</span> <span class="n">prev</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">0</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">i</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">0</span> <span class="o">||</span> <span class="n">j</span> <span class="o">==</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 每行两侧元素的值为 1
+</span><span class="c1"></span>                    <span class="n">row</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">1</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="c1">// 计算上一行对应位置两个元素的和
+</span><span class="c1"></span>                    <span class="kt">int</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">j</span><span class="o">);</span>
+                    <span class="n">row</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">j</span><span class="o">,</span> <span class="n">prev</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">j</span><span class="o">));</span>
+                    <span class="n">prev</span> <span class="o">=</span> <span class="n">temp</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">row</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>我们用了一个长度为 n 的数组（列表），所以满足 <code>O(n)</code> 的空间复杂度。</p>
+</article><section class="article labels"><a class="category" href=/categories/leetcode/>LeetCode</a></section><section class="article author"><p class="name">Jeff Liu</p><div class="details"><a class="item" href="mailto:jeffliu2857@gmail.com" target="_blank" rel="noopener noreferrer"><span class="iconfont icon-email"></span>&nbsp;jeffliu2857@gmail.com</a></div>
+</section>
+</div>
+<div class="article bottom"><section class="article navigation"><p><a class="link" href="/posts/leetcode/0070-climbing-stairs/"><span class="iconfont icon-article"></span>LeetCode - 0070.爬楼梯</a></p></section></div></section><section id="footer"><div class="footer-wrap">
+    <p class="copyright">Jeff's Blog</p>
+    <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
+        target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
+</section><script src="/js/hljs.min.0799348a91dce12c6be4a73f943cfe78f181f4e6f6ec35c4af0fca1de377879f77cfab03c30f03a174d675737b5a9314.js" integrity="sha384-B5k0ipHc4Sxr5Kc/lDz&#43;ePGB9Ob27DXErw/KHeN3h593z6sDww8DoXTWdXN7WpMU"></script><script>hljs.initHighlightingOnLoad();</script></body>
+
+</html>
