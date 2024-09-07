@@ -1,16 +1,24 @@
 <!DOCTYPE html>
-<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.68.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.133.0"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark"><title>Terminal&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.80d8c2be6c74bb9279be2e6bfd6a59e82ee1f4cdf0eddd6d3ea72d90bd516ab96fc815f3906482f8c3ba791a27d90836.css" integrity="sha384-gNjCvmx0u5J5vi5r/WpZ6C7h9M3w7d1tPqctkL1RarlvyBXzkGSC&#43;MO6eRon2Qg2"><link rel="alternate" type="application/rss+xml" href="/categories/terminal/index.xml" title="Jeff's Blog" /><meta name="twitter:card" content="summary" />
+<meta name="supported-color-schemes" content="light dark"><title>Terminal&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4256e782b09990b48ea4afe3ea2e38249bf2c9ba7babc13ff0f6e14c9affd2b18d94d5a5739237cba4e9a6c3f162c934.css" integrity="sha384-QlbngrCZkLSOpK/j6i44JJvyybp7q8E/8PbhTJr/0rGNlNWlc5I3y6TppsPxYsk0"><link rel="alternate" type="application/rss+xml" href="/categories/terminal/index.xml" title="Jeff's Blog" /><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Terminal" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
-        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><section class="article header"><h1>Terminal</h1></section><ul class="note list"><li class="item"><a class="note" href="/posts/terminal/ssh-shortcut/">
-            <p class="note title">配置SSH快捷连接</p><p class="note date">2021-04-09</p><p class="note content">在 ~/.ssh 目录下有个 config 文件，修改该文件添加主机配置： Host * ServerAliveInterval 60 Host 47 HostName 47.114.62.251 User root Port 22 IdentityFile ~/.ssh/id_rsa 即可通过命令 ssh 47 连接至服务器</p></a><p class="note labels"><a class="category" href="/categories/terminal/">Terminal</a></p></li><li class="item"><a class="note" href="/posts/terminal/shell-proxy/">
+        <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><section class="article header"><h1>Terminal</h1></section><ul class="note list"><li class="item">
+        
+        <a class="note" href="/posts/terminal/ssh-shortcut/">
+        
+            <p class="note title">配置SSH快捷连接</p><p class="note date">2021-04-09</p><p class="note content">在 ~/.ssh 目录下有个 config 文件，修改该文件添加主机配置： Host * ServerAliveInterval 60 Host 47 HostName 47.114.62.251 User root Port 22 IdentityFile ~/.ssh/id_rsa 即可通过命令 ssh 47 连接至服务器</p></a><p class="note labels"><a class="category" href="/categories/terminal/">Terminal</a></p></li><li class="item">
+        
+        <a class="note" href="/posts/terminal/shell-proxy/">
+        
             <p class="note title">Shell配置代理</p><p class="note date">2020-02-19</p><p class="note content">开启 shadowsocks 或 v2ray 代理后，如果要在 shell 里通过代理使用命令行工具，可以按照下述方法 设置 proxy 以 zsh 为例 vim ~/.zshrc 添加代理配置 alias proxy=&#34;export all_proxy=socks5://127.0.0.1:1080&#34; alias unproxy=&#34;unset proxy&#34; 或者不用 export 设为全局的环境变量，只想在使用某个命令时通过代理，其他命令不通过代理，可以这样设置 alias socks5=&#34;http_proxy=socks5://127.0.0.1:7890 https_proxy=socks5://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890 &#34; # 注意最后有个空格 保存退出<span class="mldr">&mldr;</span></p></a><p class="note labels"><a class="category" href="/categories/terminal/">Terminal</a></p></li></ul></section><section id="footer"><div class="footer-wrap">
     <p class="copyright">Jeff's Blog</p>
     <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
         target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
-        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
-</section><script src="/js/hljs.min.0799348a91dce12c6be4a73f943cfe78f181f4e6f6ec35c4af0fca1de377879f77cfab03c30f03a174d675737b5a9314.js" integrity="sha384-B5k0ipHc4Sxr5Kc/lDz&#43;ePGB9Ob27DXErw/KHeN3h593z6sDww8DoXTWdXN7WpMU"></script><script>hljs.initHighlightingOnLoad();</script></body>
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section>
+  
+
+</body>
 
 </html>

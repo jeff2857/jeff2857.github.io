@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.68.3" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><meta charset="utf-8"><meta name="generator" content="Hugo 0.133.0"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark"><title>vultr &#43; v2ray 实现科学上网及 websocket &#43; tls 流量伪装&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.80d8c2be6c74bb9279be2e6bfd6a59e82ee1f4cdf0eddd6d3ea72d90bd516ab96fc815f3906482f8c3ba791a27d90836.css" integrity="sha384-gNjCvmx0u5J5vi5r/WpZ6C7h9M3w7d1tPqctkL1RarlvyBXzkGSC&#43;MO6eRon2Qg2"><meta name="twitter:card" content="summary" />
+<meta name="supported-color-schemes" content="light dark"><title>vultr &#43; v2ray 实现科学上网及 websocket &#43; tls 流量伪装&nbsp;&ndash;&nbsp;Jeff&#39;s Blog</title><link rel="stylesheet" href="/css/core.min.4256e782b09990b48ea4afe3ea2e38249bf2c9ba7babc13ff0f6e14c9affd2b18d94d5a5739237cba4e9a6c3f162c934.css" integrity="sha384-QlbngrCZkLSOpK/j6i44JJvyybp7q8E/8PbhTJr/0rGNlNWlc5I3y6TppsPxYsk0"><meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="vultr &#43; v2ray 实现科学上网及 websocket &#43; tls 流量伪装" /><link rel="icon" type="image/ico" sizes="128x128" href="/favicon.ico"><body><section id="header">
     <div class="header wrap"><span class="header left-side"><a class="site home" href="/"><img class="site logo" src="/img/Sheldon1.jpeg" alt /><span class="site name">Jeff's Blog</span></a></span>
         <span class="header right-side"><div class="nav wrap"><nav class="nav"><a class="nav item" href="/categories/">Categories</a><a class="nav item" href="/tags/">Tags</a><a class="nav item" href="https://github%2ecom/jeff2857"target="_blank" rel="noopener noreferrer">Github</a></nav></div></span></div></section><section id="content"><div class="article-container"><section class="article header">
@@ -14,12 +14,12 @@
 <p>域名是用来做流量伪装的，即所有科学上网的流量都是访问该域名。</p>
 <p>我的域名是在阿里云域名上买的。</p>
 <p>加入第三方源 epel</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">yum install -y epel-release
-</code></pre></div><p>安装 certbot 用于签发 SSL 证书</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">yum install -y certbot
-</code></pre></div><p>接下来申请 SSL 证书，此时 80 和 443 端口不能被占用，网上的教程如下，并没有多余的说明</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">certbot certonly --standalone -d example.com
-</code></pre></div><p>但按照这个命令总是申请失败，而且 Let&rsquo;s Encrypt 有请求次数限制，搜索一番后，完整的方法如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y epel-release
+</span></span></code></pre></div><p>安装 certbot 用于签发 SSL 证书</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y certbot
+</span></span></code></pre></div><p>接下来申请 SSL 证书，此时 80 和 443 端口不能被占用，网上的教程如下，并没有多余的说明</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">certbot certonly --standalone -d example.com
+</span></span></code></pre></div><p>但按照这个命令总是申请失败，而且 Let&rsquo;s Encrypt 有请求次数限制，搜索一番后，完整的方法如下</p>
 <ol>
 <li>
 <p>将域名解析到 VPS 主机</p>
@@ -27,131 +27,131 @@
 </li>
 <li>
 <p>手动申请 SSL 证书</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">certbot certonly --manual --preferred-chanllenges dns -d example.top -d www.example.com
-</code></pre></div><p>会提示如下</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NOTE: The IP of this machine will be publicly logged as having requested this
-certificate. If you<span class="s1">&#39;re running certbot in manual mode on a machine that is not
-</span><span class="s1">your server, please ensure you&#39;</span>re okay with that.
-   
-Are you OK with your IP being logged?
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-<span class="o">(</span>Y<span class="o">)</span>es/<span class="o">(</span>N<span class="o">)</span>o: y
-</code></pre></div><p>输入 <code>y</code> 回车即可，接下来会要求添加域名的解析记录</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Please deploy a DNS TXT record under the name
-_acme-challenge.example.com with the following value:
-   
-w********0_32_1u***cs9-lHG**********KwQ
-   
-Before continuing, verify the record is deployed.
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Press Enter to Continue
-</code></pre></div><p>添加一条类型为 TXT 的解析记录，主机记录为 <code>_acme-challenge.example.com</code>，记录值为上方的字符串，添加成功后按回车键继续。如果在申请证书是指定了多个域名，则需添加多条记录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">certbot certonly --manual --preferred-chanllenges dns -d example.top -d www.example.com
+</span></span></code></pre></div><p>会提示如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</span></span><span class="line"><span class="cl">NOTE: The IP of this machine will be publicly logged as having requested this
+</span></span><span class="line"><span class="cl">certificate. If you<span class="s1">&#39;re running certbot in manual mode on a machine that is not
+</span></span></span><span class="line"><span class="cl"><span class="s1">your server, please ensure you&#39;</span>re okay with that.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Are you OK with your IP being logged?
+</span></span><span class="line"><span class="cl">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</span></span><span class="line"><span class="cl"><span class="o">(</span>Y<span class="o">)</span>es/<span class="o">(</span>N<span class="o">)</span>o: y
+</span></span></code></pre></div><p>输入 <code>y</code> 回车即可，接下来会要求添加域名的解析记录</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</span></span><span class="line"><span class="cl">Please deploy a DNS TXT record under the name
+</span></span><span class="line"><span class="cl">_acme-challenge.example.com with the following value:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">w********0_32_1u***cs9-lHG**********KwQ
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Before continuing, verify the record is deployed.
+</span></span><span class="line"><span class="cl">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</span></span><span class="line"><span class="cl">Press Enter to Continue
+</span></span></code></pre></div><p>添加一条类型为 TXT 的解析记录，主机记录为 <code>_acme-challenge.example.com</code>，记录值为上方的字符串，添加成功后按回车键继续。如果在申请证书是指定了多个域名，则需添加多条记录</p>
 <p>申请成功后，会在 <code>/etc/letsencrypt/live/example.com/</code> 下生成两个文件 <code>fullchain.pem</code> 和 <code>privkey.pem</code></p>
 </li>
 </ol>
 <h2 id="安装及配置-nginx">安装及配置 Nginx</h2>
 <p>安装 nginx</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">yum install -y nginx
-</code></pre></div><p>nginx 的配置文件在 <code>/etc/nginx/nginx.conf</code>，该文件引入了 <code>/etc/nginx/conf.d/</code> 下的 <code>*.conf</code> 文件，所以我们把自定义的配置文件放在 <code>/etc/nginx/conf.d/</code> 下，新建 <code>v2ray.conf</code> 文件</p>
-<div class="highlight"><pre class="chroma"><code class="language-nginx" data-lang="nginx"><span class="c1"># http
-</span><span class="c1"></span><span class="k">server</span> <span class="p">{</span>
-  <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-  <span class="kn">server_name</span> <span class="s">example.com</span><span class="p">;</span> <span class="c1"># 域名
-</span><span class="c1"></span>  <span class="kn">rewrite</span> <span class="s">^(.*)</span> <span class="s">https://</span><span class="nv">$server_name$1</span> <span class="s">permanent</span><span class="p">;</span> <span class="c1"># 重定向到https
-</span><span class="c1"></span><span class="p">}</span>
-
-<span class="c1"># https
-</span><span class="c1"></span><span class="k">server</span> <span class="p">{</span>
-  <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span> <span class="s">http2</span><span class="p">;</span>
-  <span class="kn">server_name</span> <span class="s">example.com</span><span class="p">;</span> <span class="c1"># 域名
-</span><span class="c1"></span>  
-  <span class="kn">ssl_protocols</span> <span class="s">TLSv1</span> <span class="s">TLSv1.1</span> <span class="s">TLSv1.2</span> <span class="s">TLSv1.3</span><span class="p">;</span>
-  
-  <span class="kn">ssl_certificate</span> <span class="s">/etc/letsencrypt/live/example.com/fullchain.pem</span><span class="p">;</span> <span class="c1"># 证书地址
-</span><span class="c1"></span>  <span class="kn">ssl_certificate_key</span> <span class="s">/etc/letsencrypt/live/example.com/privkey.pem</span><span class="p">;</span> <span class="c1"># 证书密钥地址
-</span><span class="c1"></span>  
-  <span class="kn">ssl_ciphers</span> <span class="s">ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE</span><span class="p">;</span>
-  <span class="kn">ssl_prefer_server_ciphers</span> <span class="no">on</span><span class="p">;</span>
-  <span class="kn">ssl_session_cache</span> <span class="s">shared:SSL:10m</span><span class="p">;</span>
-  <span class="kn">ssl_session_timeout</span> <span class="mi">10m</span><span class="p">;</span>
-  
-  <span class="kn">root</span> <span class="s">/usr/share/nginx/html</span><span class="p">;</span>
-  <span class="c1"># 正常网页访问
-</span><span class="c1"></span>  <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-    <span class="kn">index</span> <span class="s">index.html</span><span class="p">;</span>
-  <span class="p">}</span>
-  
-  <span class="c1"># 科学上网
-</span><span class="c1"></span>  <span class="kn">location</span> <span class="s">/awesome</span> <span class="p">{</span>
-    <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-    <span class="kn">proxy_pass</span> <span class="s">http://127.0.0.1:12345</span><span class="p">;</span> <span class="c1"># 假设v2ray的监听地址是12345
-</span><span class="c1"></span>    <span class="kn">proxy_http_version</span> <span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
-    <span class="kn">proxy_set_header</span> <span class="s">Upgrade</span> <span class="nv">$http_upgrade</span><span class="p">;</span>
-    <span class="kn">proxy_set_header</span> <span class="s">Connection</span> <span class="s">&#34;upgrade&#34;</span><span class="p">;</span>
-    <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div><h2 id="安装及配置-v2ray">安装及配置 v2ray</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y nginx
+</span></span></code></pre></div><p>nginx 的配置文件在 <code>/etc/nginx/nginx.conf</code>，该文件引入了 <code>/etc/nginx/conf.d/</code> 下的 <code>*.conf</code> 文件，所以我们把自定义的配置文件放在 <code>/etc/nginx/conf.d/</code> 下，新建 <code>v2ray.conf</code> 文件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="c1"># http
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">server_name</span> <span class="s">example.com</span><span class="p">;</span> <span class="c1"># 域名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kn">rewrite</span> <span class="s">^(.*)</span> <span class="s">https://</span><span class="nv">$server_name$1</span> <span class="s">permanent</span><span class="p">;</span> <span class="c1"># 重定向到https
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># https
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span> <span class="s">http2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">server_name</span> <span class="s">example.com</span><span class="p">;</span> <span class="c1"># 域名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="kn">ssl_protocols</span> <span class="s">TLSv1</span> <span class="s">TLSv1.1</span> <span class="s">TLSv1.2</span> <span class="s">TLSv1.3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="kn">ssl_certificate</span> <span class="s">/etc/letsencrypt/live/example.com/fullchain.pem</span><span class="p">;</span> <span class="c1"># 证书地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kn">ssl_certificate_key</span> <span class="s">/etc/letsencrypt/live/example.com/privkey.pem</span><span class="p">;</span> <span class="c1"># 证书密钥地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="kn">ssl_ciphers</span> <span class="s">ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">ssl_prefer_server_ciphers</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">ssl_session_cache</span> <span class="s">shared:SSL:10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kn">ssl_session_timeout</span> <span class="mi">10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="kn">root</span> <span class="s">/usr/share/nginx/html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># 正常网页访问
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">index</span> <span class="s">index.html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1"># 科学上网
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kn">location</span> <span class="s">/awesome</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_pass</span> <span class="s">http://127.0.0.1:12345</span><span class="p">;</span> <span class="c1"># 假设v2ray的监听地址是12345
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kn">proxy_http_version</span> <span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_set_header</span> <span class="s">Upgrade</span> <span class="nv">$http_upgrade</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_set_header</span> <span class="s">Connection</span> <span class="s">&#34;upgrade&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="安装及配置-v2ray">安装及配置 v2ray</h2>
 <p>安装 <code>wget</code> 及 <code>zip</code></p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">yum install -y wget zip unzip
-</code></pre></div><p>下载 v2ray 安装脚本</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">wget https://install.direct/go.sh
-</code></pre></div><p>安装 v2ray</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">bash go.sh
-</code></pre></div><p>修改 v2ray 的配置文件 <code>/etc/v2ray/config.json</code></p>
-<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;inbounds&#34;</span><span class="p">:</span> <span class="p">[{</span>
-    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="mi">12345</span><span class="p">,</span>
-    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;vmess&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&#34;clients&#34;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;****uuid&#34;</span><span class="p">,</span>
-          <span class="nt">&#34;level&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-          <span class="nt">&#34;alterId&#34;</span><span class="p">:</span> <span class="mi">64</span>
-        <span class="p">}</span>
-      <span class="p">]</span>
-    <span class="p">},</span>
-    <span class="nt">&#34;streamSettings&#34;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&#34;network&#34;</span><span class="p">:</span> <span class="s2">&#34;ws&#34;</span><span class="p">,</span>
-      <span class="nt">&#34;wsSettings&#34;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/awesome&#34;</span>
-      <span class="p">}</span>
-    <span class="p">},</span>
-    <span class="nt">&#34;listen&#34;</span><span class="p">:</span> <span class="s2">&#34;127.0.0.1&#34;</span>
-  <span class="p">}],</span>
-  <span class="nt">&#34;outbounds&#34;</span><span class="p">:</span> <span class="p">[{</span>
-    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;freedom&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{}</span>
-  <span class="p">},</span> <span class="p">{</span>
-    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;blackhole&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{},</span>
-    <span class="nt">&#34;tag&#34;</span><span class="p">:</span> <span class="s2">&#34;blocked&#34;</span>
-  <span class="p">}],</span>
-  <span class="nt">&#34;routing&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;rules&#34;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;field&#34;</span><span class="p">,</span>
-        <span class="nt">&#34;ip&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;geoip:private&#34;</span><span class="p">],</span>
-        <span class="nt">&#34;outboundTag&#34;</span><span class="p">:</span> <span class="s2">&#34;blocked&#34;</span>
-      <span class="p">}</span>
-    <span class="p">]</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div><p>其中 <code>port</code> 和 <code>wsSettings</code> 中的 <code>path</code> 要与 Nginx 配置里的 一致，<code>clients</code> 中的 <code>id</code> 即为 v2ray 客户端的 <code>id</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y wget zip unzip
+</span></span></code></pre></div><p>下载 v2ray 安装脚本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://install.direct/go.sh
+</span></span></code></pre></div><p>安装 v2ray</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bash go.sh
+</span></span></code></pre></div><p>修改 v2ray 的配置文件 <code>/etc/v2ray/config.json</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;inbounds&#34;</span><span class="p">:</span> <span class="p">[{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="mi">12345</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;vmess&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;clients&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;****uuid&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;level&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;alterId&#34;</span><span class="p">:</span> <span class="mi">64</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;streamSettings&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;network&#34;</span><span class="p">:</span> <span class="s2">&#34;ws&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;wsSettings&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/awesome&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;listen&#34;</span><span class="p">:</span> <span class="s2">&#34;127.0.0.1&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}],</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;outbounds&#34;</span><span class="p">:</span> <span class="p">[{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;freedom&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;protocol&#34;</span><span class="p">:</span> <span class="s2">&#34;blackhole&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;settings&#34;</span><span class="p">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;tag&#34;</span><span class="p">:</span> <span class="s2">&#34;blocked&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}],</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;routing&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;rules&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;field&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;ip&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;geoip:private&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;outboundTag&#34;</span><span class="p">:</span> <span class="s2">&#34;blocked&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>其中 <code>port</code> 和 <code>wsSettings</code> 中的 <code>path</code> 要与 Nginx 配置里的 一致，<code>clients</code> 中的 <code>id</code> 即为 v2ray 客户端的 <code>id</code></p>
 <h2 id="防火墙开放-443-端口">防火墙开放 443 端口</h2>
 <p>防火墙默认是关闭 80 和 443 端口访问的，所以需要开放 443 端口，才能从外网访问</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>443/tcp --permanent
-</code></pre></div><p>重载防火墙设置</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">firewall-cmd --reload
-</code></pre></div><h2 id="开启服务">开启服务</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>443/tcp --permanent
+</span></span></code></pre></div><p>重载防火墙设置</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">firewall-cmd --reload
+</span></span></code></pre></div><h2 id="开启服务">开启服务</h2>
 <p>开启 Nginx</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">systemctl start nginx
-</code></pre></div><p>开启 v2ray</p>
-<div class="highlight"><pre class="chroma"><code class="language-shell" data-lang="shell">systemctl start v2ray
-</code></pre></div><p>这样服务就开启了，浏览器访问 <code>https://example.com</code> 返回正常网页，访问 <code>https://example.com/awesome</code> 返回 <code>400 Bad Request</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl start nginx
+</span></span></code></pre></div><p>开启 v2ray</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">systemctl start v2ray
+</span></span></code></pre></div><p>这样服务就开启了，浏览器访问 <code>https://example.com</code> 返回正常网页，访问 <code>https://example.com/awesome</code> 返回 <code>400 Bad Request</code></p>
 <h2 id="客户端配置">客户端配置</h2>
 <p>我的 Mac 客户端用的是 v2rayU，配置如下</p>
 <p><span class="image-container"><span class="link"><img class="img" src="v2ray_client.png"
@@ -164,7 +164,9 @@ Press Enter to Continue
     <p class="copyright">Jeff's Blog</p>
     <p class="powerby"><span>Powered&nbsp;by&nbsp;</span><a href="https://gohugo.io" 
         target="_blank" rel="noopener noreferrer">Hugo</a><span>&nbsp;&amp;&nbsp;</span><a href="https://themes.gohugo.io/hugo-notepadium/" 
-        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div>
-</section><script src="/js/hljs.min.0799348a91dce12c6be4a73f943cfe78f181f4e6f6ec35c4af0fca1de377879f77cfab03c30f03a174d675737b5a9314.js" integrity="sha384-B5k0ipHc4Sxr5Kc/lDz&#43;ePGB9Ob27DXErw/KHeN3h593z6sDww8DoXTWdXN7WpMU"></script><script>hljs.initHighlightingOnLoad();</script></body>
+        target="_blank" rel="noopener noreferrer">Notepadium</a></p></div></section>
+  
+
+</body>
 
 </html>
